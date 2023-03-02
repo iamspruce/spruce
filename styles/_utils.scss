@@ -1,0 +1,47 @@
+.text_large {
+  font-size: 3.5rem;
+}
+@media (max-width: 600px) {
+  .text_large {
+    font-size: 1.5rem;
+  }
+}
+.text_small {
+  font-size: 14px;
+}
+.text_center {
+  text-align: center;
+}
+
+.text_color {
+  color: var(--text1);
+}
+
+.text_color_offset {
+  color: var(--text2);
+}
+
+.flex {
+  display: flex;
+
+  &.column {
+    flex-direction: column;
+  }
+  &.align_center {
+    align-items: center;
+  }
+  &.justify_center {
+    justify-content: center;
+  }
+  &.gap_12 {
+    gap: 12px;
+  }
+}
+
+.border_round {
+  border-radius: 50%;
+}
+
+.mt_60 {
+  margin-top: 60px;
+}

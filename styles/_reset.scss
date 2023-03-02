@@ -1,0 +1,171 @@
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  font-family: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  /* brand foundation */
+  --brand-hue: 200;
+  --brand-saturation: 100%;
+  --brand-lightness: 50%;
+
+  /* light */
+  --brand-light: hsl(
+    var(--brand-hue) var(--brand-saturation) var(--brand-lightness)
+  );
+  --text1-light: hsl(var(--brand-hue) var(--brand-saturation) 10%);
+  --text2-light: hsl(var(--brand-hue) 30% 30%);
+  --surface1-light: hsl(var(--brand-hue) 25% 90%);
+  --surface2-light: hsl(var(--brand-hue) 20% 99%);
+  --surface3-light: hsl(var(--brand-hue) 20% 92%);
+  --surface4-light: hsl(var(--brand-hue) 20% 85%);
+  --surface-shadow-light: var(--brand-hue) 10% 20%;
+  --shadow-strength-light: 0.02;
+
+  /* dark */
+  --brand-dark: hsl(
+    var(--brand-hue) calc(var(--brand-saturation) / 2)
+      calc(var(--brand-lightness) / 1.5)
+  );
+  --text1-dark: hsl(var(--brand-hue) 15% 85%);
+  --text2-dark: hsl(var(--brand-hue) 5% 65%);
+  --surface1-dark: hsl(var(--brand-hue) 10% 10%);
+  --surface2-dark: hsl(var(--brand-hue) 10% 15%);
+  --surface3-dark: hsl(var(--brand-hue) 5% 20%);
+  --surface4-dark: hsl(var(--brand-hue) 5% 25%);
+  --surface-shadow-dark: var(--brand-hue) 50% 3%;
+  --shadow-strength-dark: 0.8;
+}
+
+:root {
+  color-scheme: light;
+
+  /* set defaults */
+  --brand: var(--brand-light);
+  --text1: var(--text1-light);
+  --text2: var(--text2-light);
+  --surface1: var(--surface1-light);
+  --surface2: var(--surface2-light);
+  --surface3: var(--surface3-light);
+  --surface4: var(--surface4-light);
+  --surface-shadow: var(--surface-shadow-light);
+  --shadow-strength: var(--shadow-strength-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --brand: var(--brand-dark);
+    --text1: var(--text1-dark);
+    --text2: var(--text2-dark);
+    --surface1: var(--surface1-dark);
+    --surface2: var(--surface2-dark);
+    --surface3: var(--surface3-dark);
+    --surface4: var(--surface4-dark);
+    --surface-shadow: var(--surface-shadow-dark);
+    --shadow-strength: var(--shadow-strength-dark);
+  }
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --brand: var(--brand-light);
+  --text1: var(--text1-light);
+  --text2: var(--text2-light);
+  --surface1: var(--surface1-light);
+  --surface2: var(--surface2-light);
+  --surface3: var(--surface3-light);
+  --surface4: var(--surface4-light);
+  --surface-shadow: var(--surface-shadow-light);
+  --shadow-strength: var(--shadow-strength-light);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --brand: var(--brand-dark);
+  --text1: var(--text1-dark);
+  --text2: var(--text2-dark);
+  --surface1: var(--surface1-dark);
+  --surface2: var(--surface2-dark);
+  --surface3: var(--surface3-dark);
+  --surface4: var(--surface4-dark);
+  --surface-shadow: var(--surface-shadow-dark);
+  --shadow-strength: var(--shadow-strength-dark);
+}
+
+@supports not (color-scheme: dark) {
+  html[data-theme="dark"] {
+    background: #111;
+  }
+}
+
+html,
+body {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+body {
+  /* line-height: 1.5; */
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--surface2);
+  font-family: sans-serif;
+  /*   background-image: url("/img/bg.svg"); */
+  background-position: 50% 0%;
+  background-size: auto;
+  font-size: clamp(12px, 0.8rem + 0.25vw, 20px);
+}
+
+img,
+picture,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+ul,
+ol {
+  list-style: none;
+}
+/*
+    9. Create a root stacking context
+  */
+#root,
+#__next {
+  isolation: isolate;
+}
+
+.wrapper {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+}
