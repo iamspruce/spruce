@@ -14,7 +14,7 @@ function MenuBtn() {
   return (
     <>
       <Menu>
-        <MenuButton>
+        <MenuButton aria-label="Navigation button">
           <svg
             className="menu-icon"
             aria-hidden="true"
