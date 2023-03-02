@@ -21,12 +21,12 @@ function MenuBtn() {
             width="22"
             height="22"
             xmlns="http://www.w3.org/2000/svg"
-            fill-rule="evenodd"
+            fillRule="evenodd"
             clip-rule="evenodd"
           >
             <path
               d="m22 15.25c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-6.5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75z"
-              fill-rule="nonzero"
+              fillRule="nonzero"
             />
           </svg>
         </MenuButton>
