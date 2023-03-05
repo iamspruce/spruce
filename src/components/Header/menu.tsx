@@ -33,10 +33,7 @@ function MenuBtn() {
         <MenuList>
           {config.links.map((link, index) => (
             <li key={link.name} className={`header_menu_list `}>
-              <Link
-                className={`header_menu_link animate fade delay-${index}`}
-                href={link.url}
-              >
+              <Link className={`header_menu_link`} href={link.url}>
                 {link.name}
               </Link>
             </li>

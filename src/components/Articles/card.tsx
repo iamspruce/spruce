@@ -13,7 +13,7 @@ function Card({ article, index }: { article: Article; index: number }) {
   return (
     <article
       key={index}
-      className={`article_cards_card animate slide delay-${index}`}
+      className={`article_cards_card shadow hover_shadow animate slide delay-${index}`}
     >
       <div className="article_cards_card_image">
         <div className="article_cards_card_image_text">

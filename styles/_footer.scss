@@ -1,0 +1,31 @@
+.footer {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  background-color: var(--surface3);
+
+  &_inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 2rem;
+  }
+  &_items {
+    &_title {
+      margin-bottom: 1rem;
+    }
+    &_link {
+      display: inline-block;
+      text-decoration: none;
+      padding: 6px 0px;
+      color: inherit;
+    }
+  }
+}
+
+@media (max-width: 414px) {
+  .footer {
+    &_inner {
+      justify-content: space-between;
+    }
+  }
+}

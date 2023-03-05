@@ -117,11 +117,17 @@ body {
   /* line-height: 1.5; */
   -webkit-font-smoothing: antialiased;
   background-color: var(--surface2);
-  font-family: sans-serif;
-  /*   background-image: url("/img/bg.svg"); */
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+  /*  background-image: url("/img/bg.svg"); */
   background-position: 50% 0%;
   background-size: auto;
-  font-size: clamp(12px, 0.8rem + 0.25vw, 20px);
+  /* font-size: clamp(12px, 0.8rem + 0.25vw, 20px); */
+  font-size: calc(
+    ((16 / 16) * 1rem) + (18 - 16) *
+      calc((calc(1140 * 1px) - 320 / 16 * 1rem) / (1140 - 320))
+  );
 }
 
 img,
@@ -141,7 +147,9 @@ select {
   border: 0px;
   cursor: pointer;
 }
-
+a {
+  color: inherit;
+}
 p,
 h1,
 h2,
@@ -151,9 +159,24 @@ h5,
 h6 {
   overflow-wrap: break-word;
 }
-ul,
-ol {
+p {
+  margin: 0 0 1.5rem;
+}
+ul {
   list-style: none;
+}
+ol {
+  list-style-type: disc;
+
+  li:not(:last-child) {
+    margin-bottom: 0.95em;
+  }
+  li {
+    a {
+      box-shadow: inset 0 -2px 0 0 currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+  }
 }
 /*
     9. Create a root stacking context
@@ -164,8 +187,17 @@ ol {
 }
 
 .wrapper {
-  width: 90%;
+  max-width: 85vw;
+  width: min(90vw, 85rem);
+  margin-inline: auto;
+}
+.wrapper_page {
+  padding-top: 7rem;
+  padding-bottom: 7rem;
+}
+.wrapper_content {
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
-  max-width: 1200px;
+  max-width: 600px;
 }

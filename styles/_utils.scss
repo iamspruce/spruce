@@ -20,7 +20,15 @@
 .text_color_offset {
   color: var(--text2);
 }
-
+.f_700 {
+  font-weight: 700;
+}
+.h4 {
+  font-size: calc(
+    ((25.63 / 16) * 1rem) + (43.95 - 25.63) *
+      calc((calc(1140 * 1px) - 320 / 16 * 1rem) / (1140 - 320))
+  );
+}
 .flex {
   display: flex;
 
@@ -36,6 +44,12 @@
   &.gap_12 {
     gap: 12px;
   }
+  &.gap_24 {
+    gap: 22px;
+  }
+  &.gap_36 {
+    gap: 36px;
+  }
 }
 
 .border_round {
@@ -44,4 +58,42 @@
 
 .mt_60 {
   margin-top: 60px;
+}
+.mb_12 {
+  margin-block-end: 12px;
+}
+.shadow {
+  border: 2px solid #eceeef;
+
+  box-shadow: 14px 14px 30px -10px rgba(0, 0, 0, 0.1);
+}
+.hover_shadow {
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  }
+}
+.image {
+  position: relative;
+  width: 100%;
+  max-width: 1020px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 500px;
+
+  img {
+    object-fit: cover;
+    object-position: 20% 68%;
+  }
+}
+
+.grid {
+  @media all and (min-width: 64rem) {
+    // 1024px
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: calc(
+      ((((16) * 1.5) / 16) * 1rem) + (((18) * 3) - ((16) * 1.5)) *
+        calc((calc(1140 * 1px) - 320 / 16 * 1rem) / (1140 - 320))
+    );
+  }
 }
