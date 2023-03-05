@@ -60,9 +60,9 @@ function Page() {
         <h3 className="h4">Speaking</h3>
         <p>
           I truly enjoy speaking at events and conferences to share my knowledge
-          and engage with like-minded individuals. If you're looking for a web
-          development speaker for your upcoming event, don't hesitate to reach
-          out to me.
+          and engage with like-minded individuals. If you&apos;re looking for a
+          web development speaker for your upcoming event, don&apos;t hesitate
+          to reach out to me.
         </p>
       </div>
       <div className="wrapper_content flex column  gap_12">
