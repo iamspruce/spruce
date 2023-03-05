@@ -48,28 +48,23 @@ function Footer() {
               Node.js
             </Link>
           </li>
-          <li className="footer_items_list">
-            <Link href="" className="footer_items_link">
-              Technical writing
-            </Link>
-          </li>
         </ul>
         <ul className="footer_items">
           <p className="footer_items_title">
             <strong>Publications</strong>
           </p>
           <li className="footer_items_list">
-            <Link
+            <a
               href="https://www.freecodecamp.org/news/author/spruce/"
               className="footer_items_link"
             >
               Freecodecamp
-            </Link>
+            </a>
           </li>
           <li className="footer_items_list">
-            <Link href="https://dev.to/iamspruce" className="footer_items_link">
+            <a href="https://dev.to/iamspruce" className="footer_items_link">
               Dev.to
-            </Link>
+            </a>
           </li>
         </ul>
         <ul className="footer_items">
@@ -77,20 +72,20 @@ function Footer() {
             <strong>Social</strong>
           </p>
           <li className="footer_items_list">
-            <Link
+            <a
               href="https://twitter.com/sprucekhalifa"
               className="footer_items_link"
             >
               Twitter
-            </Link>
+            </a>
           </li>
           <li className="footer_items_list">
-            <Link
+            <a
               href="https://github.com/iamspruce"
               className="footer_items_link"
             >
               Github
-            </Link>
+            </a>
           </li>
           <li className="footer_items_list">
             <a
