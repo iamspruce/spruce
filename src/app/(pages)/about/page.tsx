@@ -18,7 +18,7 @@ function Page() {
             className="shadow hover_shadow"
             src={coverImage}
             width="403"
-            height={433}
+            height={403}
             alt=""
           />
         </div>

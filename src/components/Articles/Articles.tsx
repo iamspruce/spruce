@@ -4,7 +4,7 @@ import { ArticleData } from "@/articles";
 function Articles() {
   return (
     <div className="article_wrapper wrapper">
-      <p>
+      <p className="mb_12">
         <strong>Featured Posts</strong>{" "}
       </p>
       <div className="article_cards">

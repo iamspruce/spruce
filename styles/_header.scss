@@ -40,7 +40,7 @@
       display: inline-block;
       padding: 6px 2rem;
       text-decoration: none;
-      color: inherit;
+      color: var(--text4);
     }
   }
 }
@@ -50,7 +50,7 @@
   list-style: none;
   border-radius: 4px;
   padding: 0rem;
-  background-color: var(--surface1);
+  background-color: var(--surface1) !important;
 }
 [data-reach-menu-button] {
   svg {
