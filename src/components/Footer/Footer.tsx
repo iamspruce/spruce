@@ -102,6 +102,14 @@ function Footer() {
                 Linkedin
               </a>
             </li>
+            <li className="footer_items_list">
+              <a
+                href="https://codepen.io/Spruce_khalifa"
+                className="footer_items_link"
+              >
+                Codepen
+              </a>
+            </li>
           </ul>
         </div>
       </div>
