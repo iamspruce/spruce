@@ -1,5 +1,5 @@
 import Image from "next/image";
-import avatarImage from "../../../public/img/spruce.png";
+import avatarImage from "/public/img/spruce.png";
 
 function Avatar() {
   return (
