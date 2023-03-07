@@ -1,4 +1,3 @@
-import Articles from "@/components/Articles";
 import ArticleList from "@/components/Articles/list";
 
 function Page() {
