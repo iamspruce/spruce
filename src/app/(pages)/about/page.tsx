@@ -1,5 +1,5 @@
 import Image from "next/image";
-import coverImage from "../../../../public/img/spruce.png";
+import coverImage from "../../../../public/img/spruce-lx.png";
 
 function Page() {
   return (
@@ -12,13 +12,12 @@ function Page() {
           support to clients, including international companies.
         </p>
       </div>
+
       <div className="grid mt_60">
         <div className="mb_12" style={{ gridColumn: "1 / 5" }}>
           <Image
-            className="shadow hover_shadow"
+            className="image shadow hover_shadow"
             src={coverImage}
-            width="403"
-            height={403}
             alt=""
           />
         </div>

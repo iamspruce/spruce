@@ -59,8 +59,20 @@
 .mt_60 {
   margin-top: 60px;
 }
+.mt_6 {
+  margin-block-start: 6px;
+}
 .mb_12 {
   margin-block-end: 12px;
+}
+.mb_36 {
+  margin-block-end: 36px;
+}
+.mb_60 {
+  margin-block-end: 60px !important;
+}
+.mb_24 {
+  margin-block-end: 24px;
 }
 .shadow {
   border: 2px solid #eceeef;
@@ -73,13 +85,14 @@
   }
 }
 .image {
-  img {
-    object-fit: cover;
-    width: 100%;
-    height: auto;
-  }
+  height: auto;
 }
-
+.list_none {
+  list-style: none;
+}
+.color_offset {
+  color: var(--text1);
+}
 .grid {
   @media all and (min-width: 64rem) {
     // 1024px

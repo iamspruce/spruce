@@ -171,11 +171,6 @@ ol {
   li:not(:last-child) {
     margin-bottom: 0.95em;
   }
-  li {
-    a {
-      border-bottom: 1px solid currentColor;
-    }
-  }
 }
 /*
     9. Create a root stacking context

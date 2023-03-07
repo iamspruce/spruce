@@ -43,5 +43,86 @@
     "author": "Spruce Emmanuel",
     "platform": "Freecodecamp",
     "date": "FEBRUARY 17, 2023"
+  },
+  {
+    "title": "JavaScript Promises for Beginners",
+    "url": "https://www.freecodecamp.org/news/javascript-promises-for-beginners/",
+    "description": "In this article, You will learn about JavaScript promises in this article by building a real-world example.",
+    "image": "https://www.freecodecamp.org/news/content/images/2022/05/Web-capture_11-5-2022_134720_127.0.0.1.jpeg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "MAY 25, 2022"
+  },
+  {
+    "title": "How to Visualize Weather Data with D3.js",
+    "url": "https://www.freecodecamp.org/news/visualize-weather-data-with-d3js/",
+    "description": "In this article, we'll use the Tomorrow.io weather API and D3.js to forecast and visualize the precipitation probability of a particular location on a line chart.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2022/01/reza-shayestehpour-Nw_D8v79PM4-unsplash.jpg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "JANUARY 17, 2022"
+  },
+  {
+    "title": "D3.js Tutorial – Data Visualization for Beginners",
+    "url": "https://www.freecodecamp.org/news/d3js-tutorial-data-visualization-for-beginners/",
+    "description": "In this article, I'm going to walk you through how to use D3.js in a step by step and beginner-friendly way. We'll talk about what D3.js is, how it works, and we'll create some basic visualizations to add transitions, interactions, and zooming.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2021/11/Group-1.png",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "NOVEMBER 24, 2021"
+  },
+  {
+    "title": "How to Create a Dynamic Twitter Header",
+    "url": "https://www.freecodecamp.org/news/create-a-dynamic-twitter-header/",
+    "description": "In this tutorial you'll learn how to create a Twitter banner that's updated dynamically with your current followers' profile pictures every 60 seconds.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2021/10/Group-1--2-.png",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "OCTOBER 11, 2021"
+  },
+  {
+    "title": "CSS Flexbox Tutorial – How to Build a Fixed Side and Bottom Navbar",
+    "url": "https://www.freecodecamp.org/news/fixed-side-and-bottom-navbar-with-css-flexbox/",
+    "description": "In this tutorial you'll learn how to create a fixed sidebar and fixed bottom navigation menu with CSS flexbox instead. I'll host all code and demos on Codepen so you can see a live preview of what we'll build.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2021/09/halacious-weRQAu9TA-A-unsplash.jpg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "SEPTEMBER 28, 2021"
+  },
+  {
+    "title": "How to Use Webmentions with Gatsby.js – A Beginner's Guide",
+    "url": "https://www.freecodecamp.org/news/how-to-use-webmentions-with-gatsby-beginners-guide/",
+    "description": "This tutorial will implement Webmentions on an already existing site, so you should have at least some basic knowledge of React and Gatsby.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2021/07/Web-capture_19-7-2021_222358_iamspruce.dev-1.jpeg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "JULY 22, 2021"
+  },
+  {
+    "title": "What is Website Theming? How to Use CSS Custom Properties and Gatsby.js to Customize Your Site",
+    "url": "https://www.freecodecamp.org/news/website-theming-with-css-custom-properties-and-gatsbyjs/",
+    "description": "In this article, I'm going to show you how to theme your website so users can customize certain elements to their tastes. We'll talk about website themes, how theming works, and we'll end with a demo so you can see it in action. Let's dive in.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2021/06/theming-website-preview-1-1.jpg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "JULY 1, 2021"
+  },
+  {
+    "title": "HTML Roving tabindex Attribute Explained with Examples",
+    "url": "https://www.freecodecamp.org/news/html-roving-tabindex-attribute-explained-with-examples/",
+    "description": "Have you ever used the CSS order or direction properties? You've probably used them dozens of times, but did you realize that these properties will cause a disconnect between what's being displayed and what's actually in the DOM?",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2021/06/photo-1578401058525-35aaec0b4658--1-.jpeg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "JUNE 14, 2021"
+  },
+  {
+    "title": "How to Search and Filter Components in React",
+    "url": "https://www.freecodecamp.org/news/search-and-filter-component-in-reactjs/",
+    "description": "If you're building a React app, you want your users to be able to search and get exact results. And if you are getting tons of items from an API, then you need to create a way for users to be able to find various items easily.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2021/05/wirxeocmd6tpnn9c5oqc.jpg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "JUNE 4, 2021"
   }
 ]

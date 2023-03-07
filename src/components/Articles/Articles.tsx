@@ -8,7 +8,7 @@ function Articles() {
         <strong>Featured Posts</strong>{" "}
       </p>
       <div className="article_cards">
-        {ArticleData.map((article, i) => {
+        {ArticleData.slice(0, 5).map((article, i) => {
           return <Card key={i} article={article} index={i} />;
         })}
       </div>
