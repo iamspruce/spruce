@@ -1,5 +1,5 @@
 import Image from "next/image";
-import coverImage from "../../../../public/img/spruce-lx.png";
+import coverImage from "../../../../public/spruce-lx.png";
 
 function Page() {
   return (
