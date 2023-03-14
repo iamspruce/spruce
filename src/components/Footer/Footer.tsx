@@ -33,46 +33,22 @@ function Footer() {
         </div>
         <div>
           <p className="footer_items_title">
-            <strong>Tutorials</strong>
+            <strong>Products</strong>
           </p>
           <ul className="footer_items">
             <li className="footer_items_list">
               <Link href="#0" className="footer_items_link">
-                JavaScript
+                ReplyGPT
               </Link>
             </li>
             <li className="footer_items_list">
               <Link href="#0" className="footer_items_link">
-                React
-              </Link>
-            </li>
-            <li className="footer_items_list">
-              <Link href="#0" className="footer_items_link">
-                Node.js
+                Feedin.bio
               </Link>
             </li>
           </ul>
         </div>
-        <div>
-          <p className="footer_items_title">
-            <strong>Publications</strong>
-          </p>
-          <ul className="footer_items">
-            <li className="footer_items_list">
-              <a
-                href="https://www.freecodecamp.org/news/author/spruce/"
-                className="footer_items_link"
-              >
-                Freecodecamp
-              </a>
-            </li>
-            <li className="footer_items_list">
-              <a href="https://dev.to/iamspruce" className="footer_items_link">
-                Dev.to
-              </a>
-            </li>
-          </ul>
-        </div>
+
         <div>
           <p className="footer_items_title">
             <strong>Social</strong>
@@ -108,6 +84,26 @@ function Footer() {
                 className="footer_items_link"
               >
                 Codepen
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p className="footer_items_title">
+            <strong>Publications</strong>
+          </p>
+          <ul className="footer_items">
+            <li className="footer_items_list">
+              <a
+                href="https://www.freecodecamp.org/news/author/spruce/"
+                className="footer_items_link"
+              >
+                Freecodecamp
+              </a>
+            </li>
+            <li className="footer_items_list">
+              <a href="https://dev.to/iamspruce" className="footer_items_link">
+                Dev.to
               </a>
             </li>
           </ul>
