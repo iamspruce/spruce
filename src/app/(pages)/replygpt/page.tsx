@@ -25,8 +25,8 @@ function Page() {
           </p>
           <p>
             Our platform is designed to help you save time and enhance your
-            email writing experience, whether you're composing an email from
-            scratch or replying to an existing message.
+            email writing experience, whether you&apos;re composing an email
+            from scratch or replying to an existing message.
           </p>
           <p>Some of the features we offer include:</p>
           <ol className="mb_24">
@@ -37,8 +37,8 @@ function Page() {
             </li>
             <li>
               Reply to any email: Our AI analyzes the context of the email
-              you're responding to and suggests relevant content to include in
-              your reply, saving you time and effort.
+              you&apos;re responding to and suggests relevant content to include
+              in your reply, saving you time and effort.
             </li>
             <li>
               Choose a tone for your message: Whether you want to sound formal,
@@ -95,19 +95,19 @@ function Page() {
               sidebar. You can choose from professional, friendly, or casual.
             </li>
             <li>
-              <strong>Click "Generate Mail"</strong> <br /> Finally, click the
-              "Generate Mail" button in the sidebar to have ReplyGPT generate a
-              draft email for you. You can then review and edit the email before
-              sending it off.
+              <strong>Click &quot;Generate Mail&quot;</strong> <br /> Finally,
+              click the &quot;Generate Mail&quot; button in the sidebar to have
+              ReplyGPT generate a draft email for you. You can then review and
+              edit the email before sending it off.
             </li>
           </ol>
           <p>
             <br />
             <br />
-            If you're interested in the ReplyGPT add-on, download it here. For
-            information on how we collect and use data through ReplyGPT, please
-            see our <Link href="/replygpt/privacy">Privacy Policy</Link>. By
-            using ReplyGPT, you agree to our{" "}
+            If you&apos;re interested in the ReplyGPT add-on, download it here.
+            For information on how we collect and use data through ReplyGPT,
+            please see our <Link href="/replygpt/privacy">Privacy Policy</Link>.
+            By using ReplyGPT, you agree to our{" "}
             <Link href="/replygpt/terms">Terms of Service</Link>.
           </p>
           <hr />
