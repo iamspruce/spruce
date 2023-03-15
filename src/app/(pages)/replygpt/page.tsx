@@ -113,9 +113,7 @@ function Page() {
             By using ReplyGPT, you agree to our{" "}
             <Link href="/replygpt/terms">Terms of Service</Link>.
           </p>
-          <div className="flex align_center justify_center">
-            <Image src={replygpt} alt="ReplyGPT - Your AI Email Assistant" />
-          </div>
+          <Image src={replygpt} alt="ReplyGPT - Your AI Email Assistant" />
           <hr />
           <p>
             <br />
