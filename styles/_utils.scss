@@ -84,6 +84,21 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
   }
 }
+.round {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(
+    ((25.63 / 16) * 2rem) + (43.95 - 25.63) *
+      calc((calc(1140 * 1px) - 320 / 16 * 1rem) / (1140 - 320))
+  );
+  height: calc(
+    ((25.63 / 16) * 2rem) + (43.95 - 25.63) *
+      calc((calc(1140 * 1px) - 320 / 16 * 1rem) / (1140 - 320))
+  );
+  background-color: var(--surface3);
+}
 .image {
   height: auto;
 }

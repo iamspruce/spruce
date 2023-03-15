@@ -69,8 +69,8 @@ function Page() {
         <p>
           You have complete control over the data that we have collected and
           stored on our databases. If you want to modify or delete any data we
-          have stored, please contact us via email at replygpt@gmail.com to do
-          so, and we will promptly work through your inquiry.
+          have stored, please contact us via email at replygptdev@gmail.com to
+          do so, and we will promptly work through your inquiry.
         </p>
         <h3 className="mb_12">Consent</h3>
         <p>
@@ -94,7 +94,7 @@ function Page() {
         <h2 className="mb_12">Contact Us</h2>
         <p>
           If you have any questions or concerns about our Privacy Policy or our
-          add-on, please contact us at replygpt@gmail.com.
+          add-on, please contact us at replygptdev@gmail.com.
         </p>
       </div>
     </div>

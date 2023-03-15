@@ -1,10 +1,13 @@
 import Link from "next/link";
+import Image from "next/image";
+import replygpt from "/public/img/replygpt/replygpt.png";
 
 function Page() {
   return (
     <div className="wrapper">
       <div className="wrapper_content">
-        <div className=" mb_60 flex column align_center text_center justify_center gap_24">
+        <div className="mb_60 flex column align_center text_center justify_center gap_24">
+          <div className="h4 border_round round">✍️</div>
           <h1 className="h4">ReplyGPT - Your AI Email Assistanct Writer</h1>
           <p>
             Introducing ReplyGPT - the ultimate AI email assistant that helps
@@ -101,7 +104,7 @@ function Page() {
               edit the email before sending it off.
             </li>
           </ol>
-          <p>
+          <p className="mb_24">
             <br />
             <br />
             If you&apos;re interested in the ReplyGPT add-on, download it here.
@@ -110,11 +113,14 @@ function Page() {
             By using ReplyGPT, you agree to our{" "}
             <Link href="/replygpt/terms">Terms of Service</Link>.
           </p>
+          <div className="flex align_center justify_center">
+            <Image src={replygpt} alt="ReplyGPT - Your AI Email Assistant" />
+          </div>
           <hr />
           <p>
             <br />
             If you have any feedback, found any issues or bugs, or have any
-            questions at all, please email us at replygpt@gmail.com. We will
+            questions at all, please email us at replygptdev@gmail.com. We will
             respond as soon as possible to resolve any problems / answer any
             inquiries.
           </p>
