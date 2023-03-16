@@ -1,13 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import replygpt from "/public/img/replygpt/replygpt.png";
+import replygptIcon from "/public/img/replygpt/android-chrome-192x192.png";
 
 function Page() {
   return (
     <div className="wrapper">
       <div className="wrapper_content">
         <div className="mb_60 flex column align_center text_center justify_center gap_24">
-          <div className="h4 border_round round">✍️</div>
+          <div className="h4 border_round round">
+            <Image src={replygptIcon} className="height_grow" alt="" />
+          </div>
           <h1 className="h4">ReplyGPT - Your AI Email Assistanct Writer</h1>
           <p>
             Introducing ReplyGPT - the ultimate AI email assistant that helps

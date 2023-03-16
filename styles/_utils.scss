@@ -99,6 +99,16 @@
   );
   background-color: var(--surface3);
 }
+.height_grow {
+  width: calc(
+    ((25.63 / 16) * 1rem) + (43.95 - 25.63) *
+      calc((calc(1140 * 1px) - 320 / 16 * 1rem) / (1140 - 320))
+  );
+  height: calc(
+    ((25.63 / 16) * 1rem) + (43.95 - 25.63) *
+      calc((calc(1140 * 1px) - 320 / 16 * 1rem) / (1140 - 320))
+  );
+}
 .image {
   height: auto;
 }

@@ -37,7 +37,7 @@ function Footer() {
           </p>
           <ul className="footer_items">
             <li className="footer_items_list">
-              <Link href="#0" className="footer_items_link">
+              <Link href="/replygpt" className="footer_items_link">
                 ReplyGPT
               </Link>
             </li>
