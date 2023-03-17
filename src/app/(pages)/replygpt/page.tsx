@@ -121,7 +121,8 @@ function Page() {
           <p>
             <br />
             If you have any feedback, found any issues or bugs, or have any
-            questions at all, please email us at replygptdev@gmail.com. We will
+            questions at all, please email us at replygptdev@gmail.com or use
+            our <Link href="/replygpt/support">Support page</Link> . We will
             respond as soon as possible to resolve any problems / answer any
             inquiries.
           </p>

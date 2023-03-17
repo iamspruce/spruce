@@ -1,0 +1,48 @@
+.form_wrapper {
+}
+.form_body {
+}
+.form_fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.form_label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 0.55rem;
+}
+.form_input {
+  display: block;
+  width: 100%;
+  background-color: var(--surface3);
+  box-shadow: var(--surface-shadow) var(--shadow-strength);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.8rem 1rem;
+  box-sizing: border-box;
+}
+.form_btn {
+  background-color: var(--surface1);
+  border-color: transparent;
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
