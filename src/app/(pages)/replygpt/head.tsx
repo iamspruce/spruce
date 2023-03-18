@@ -1,14 +1,14 @@
 export default function Head() {
   return (
     <>
-      <title>ReplyGPT - Your AI Email Assistanct Writer</title>
+      <title>ReplyGPT - Your AI Email Assistant Writer</title>
       <meta
         name="description"
         content="Introducing ReplyGPT - the ultimate AI email assistant that helps you write better, faster, and smarter emails. Say goodbye to writer's block and hello to more productive communication with ReplyGPT."
       />
       <meta
         property="og:title"
-        content="ReplyGPT - Your AI Email Assistanct Writer"
+        content="ReplyGPT - Your AI Email Assistant Writer"
       />
       <meta
         property="og:description"
@@ -25,13 +25,10 @@ export default function Head() {
         content="Introducing ReplyGPT - the ultimate AI email assistant that helps you write better, faster, and smarter emails. Say goodbye to writer's block and hello to more productive communication with ReplyGPT."
       />
       <meta name="twitter:card" content="summary" />
-      <meta
-        name="author"
-        content="ReplyGPT - Your AI Email Assistanct Writer"
-      />
+      <meta name="author" content="ReplyGPT - Your AI Email Assistant Writer" />
       <meta
         property="og:site_name"
-        content="ReplyGPT - Your AI Email Assistanct Writer"
+        content="ReplyGPT - Your AI Email Assistant Writer"
       />
       <meta property="og:locale" content="en_US" />
       <meta name="twitter:site" content="@replygptdev" />

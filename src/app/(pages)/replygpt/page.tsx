@@ -11,7 +11,7 @@ function Page() {
           <div className="h4 border_round round">
             <Image src={replygptIcon} className="height_grow" alt="" />
           </div>
-          <h1 className="h4">ReplyGPT - Your AI Email Assistanct Writer</h1>
+          <h1 className="h4">ReplyGPT - Your AI Email Assistant Writer</h1>
           <p>
             Introducing ReplyGPT - the ultimate AI email assistant that helps
             you write better, faster, and smarter emails. Say goodbye to
