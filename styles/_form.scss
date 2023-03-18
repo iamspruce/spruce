@@ -16,6 +16,7 @@
 .form_input {
   display: block;
   width: 100%;
+  max-width: 600px;
   background-color: var(--surface3);
   box-shadow: var(--surface-shadow) var(--shadow-strength);
   font-size: 1rem;
@@ -23,6 +24,7 @@
   padding: 0.8rem 1rem;
   box-sizing: border-box;
 }
+
 .form_btn {
   background-color: var(--surface1);
   border-color: transparent;
