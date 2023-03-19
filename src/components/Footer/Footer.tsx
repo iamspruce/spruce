@@ -42,6 +42,11 @@ function Footer() {
               </Link>
             </li>
             <li className="footer_items_list">
+              <Link href="/projectwriter" className="footer_items_link">
+                Project Writer
+              </Link>
+            </li>
+            <li className="footer_items_list">
               <Link href="#0" className="footer_items_link">
                 Feedin.bio
               </Link>

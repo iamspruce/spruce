@@ -2,7 +2,6 @@ interface OpenAIResponsePayload {
   messages: { role: string; content: string }[];
   model: string;
   temperature: number;
-  user: string;
 }
 
 export async function OpenAIFetch(payload: OpenAIResponsePayload) {

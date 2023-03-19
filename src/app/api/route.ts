@@ -25,7 +25,6 @@ export async function POST(request: NextRequest, response: NextResponse) {
       },
     ],
     temperature: 0.2,
-    user: "coursematrs",
   };
 
   try {

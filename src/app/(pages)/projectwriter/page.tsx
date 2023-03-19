@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import Image from "next/image";
 import replygptIcon from "/public/img/replygpt/android-chrome-192x192.png";
@@ -27,9 +26,6 @@ function Page() {
     const chapter = document.getElementById(
       "chapter"
     ) as HTMLInputElement | null;
-    const message = document.getElementById(
-      "message"
-    ) as HTMLInputElement | null;
 
     const payload = {
       topic: topic?.value,
@@ -42,6 +38,7 @@ function Page() {
       .then((data) => {
         console.log(data); // JSON data parsed by `data.json()` call
         toast.dismiss();
+
         toast.success("Your project is ready.");
 
         const raw = data;
@@ -62,6 +59,7 @@ function Page() {
       grower.dataset.replicatedValue = textarea.value;
     });
   };
+
   return (
     <div className="wrapper">
       <div className="wrapper_content">
@@ -126,16 +124,9 @@ function Page() {
                 <label htmlFor="message" className="form_label">
                   Your project
                 </label>
-                <div className="grow-wrap">
-                  <textarea
-                    className="textarea form_input"
-                    name="message"
-                    id="message"
-                    placeholder="Your project will apppear here"
-                    onChange={handleInput}
-                    value={text}
-                  />
-                </div>
+                <pre className="textarea form_input" contentEditable>
+                  {text}
+                </pre>
               </div>
               <p></p>
             </div>

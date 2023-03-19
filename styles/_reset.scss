@@ -175,6 +175,9 @@ ol {
 select {
   appearance: none;
 }
+pre {
+  white-space: break-spaces;
+}
 /*
     9. Create a root stacking context
   */
