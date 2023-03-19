@@ -6,22 +6,11 @@ import replygptIcon from "/public/img/replygpt/android-chrome-192x192.png";
 
 function Page() {
   const [text, SetText] = React.useState("Your project will apppear here");
+  let endStream = false;
 
-  async function fetchData(url = "", data = {}) {
-    console.log(data);
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify(data),
-    });
-    return response.text();
-  }
-
-  const handleForm = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    SetText("");
     const topic = document.getElementById("topic") as HTMLInputElement | null;
     const chapter = document.getElementById(
       "chapter"
@@ -31,33 +20,51 @@ function Page() {
       topic: topic?.value,
       chapter: chapter?.value,
     };
+    toast.loading("Please hang on... I am writing your project");
 
-    toast.loading("Please wait... I am generating your project...");
-
-    fetchData("api", payload)
-      .then((data) => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        toast.dismiss();
-
-        toast.success("Your project is ready.");
-
-        const raw = data;
-        SetText(raw);
-      })
-      .catch((error) => {
-        toast.dismiss();
-        toast.error("Something bad happened, please try again");
-        console.log(error, error.message);
-      });
-  };
-
-  const handleInput = () => {
-    const grower: any = document.querySelector(".grow-wrap");
-    const textarea = grower.querySelector("textarea");
-
-    textarea.addEventListener("input", () => {
-      grower.dataset.replicatedValue = textarea.value;
+    const response = await fetch("api", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "content-type": "application/json",
+      },
     });
+
+    if (response.ok) {
+      toast.dismiss();
+      toast.success("Your project is ready");
+
+      try {
+        const data = response.body;
+        if (!data) {
+          return;
+        }
+        const reader = data.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+          const { value, done } = await reader.read();
+          const chunkValue = decoder.decode(value);
+          SetText((prev) => prev + chunkValue);
+          if (done) {
+            endStream = true;
+            break;
+          }
+        }
+      } catch (err) {
+        toast.dismiss();
+
+        return toast.error("Looks like OpenAI timed out :(");
+      }
+    } else {
+      let error = await response.text();
+      console.log(error);
+      toast.dismiss();
+
+      return toast.error(
+        "Oops, seems I was busy handling other user requests please try again"
+      );
+    }
+    toast.dismiss();
   };
 
   return (

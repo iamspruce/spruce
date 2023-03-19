@@ -24,5 +24,8 @@
     "sass": "^1.58.0",
     "sharp": "^0.31.3",
     "typescript": "4.9.5"
+  },
+  "devDependencies": {
+    "eventsource-parser": "^0.1.0"
   }
 }

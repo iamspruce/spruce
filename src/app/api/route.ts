@@ -24,17 +24,15 @@ export async function POST(request: NextRequest, response: NextResponse) {
         content: `write only this chapter: ${chapter}`,
       },
     ],
-    temperature: 0.2,
+    temperature: 0.7,
+    max_tokens: 2048,
+    top_p: 1.0,
+    frequency_penalty: 0.0,
+    stream: true,
+    presence_penalty: 0.0,
+    n: 1,
   };
 
-  try {
-    const completetion = await OpenAIFetch(payload);
-    const json = completetion.choices[0].message.content;
-    return new Response(json);
-  } catch (error: any) {
-    console.log(error, error.message, "na me run");
-    return new NextResponse(null, {
-      status: 400,
-    });
-  }
+  const stream = await OpenAIFetch(payload);
+  return new Response(stream);
 }
