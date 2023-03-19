@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { OpenAIFetch } from "lib/openai";
 
+export const config = {
+  runtime: "experimental-edge", // this is a pre-requisite
+};
+
 export async function POST(request: NextRequest, response: NextResponse) {
   const body = request.body;
   const {
