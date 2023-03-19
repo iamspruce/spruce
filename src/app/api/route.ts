@@ -29,10 +29,10 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
   try {
     const completetion = await OpenAIFetch(payload);
-    let json = completetion;
+    const json = completetion.choices[0].message.content;
     return new Response(json);
   } catch (error: any) {
-    console.log(error, error.message);
+    console.log(error, error.message, "na me run");
     return new NextResponse(null, {
       status: 400,
     });

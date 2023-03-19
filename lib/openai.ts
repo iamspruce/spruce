@@ -14,7 +14,7 @@ export async function OpenAIFetch(payload: OpenAIResponsePayload) {
     body: JSON.stringify(payload),
     cache: "no-cache",
   });
-  const json = await res.json();
+  const json = res.json();
   // TODO: log error
-  return json.choices[0].message.content;
+  return json;
 }
