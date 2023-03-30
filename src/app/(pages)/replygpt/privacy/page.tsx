@@ -15,9 +15,22 @@ function Page() {
         </div>
         <h3 className="mb_12">Information Collection And Use</h3>
         <p>
+          ReplyGPT's use and transfer to any other app of information received
+          from Google APIs will adhere to the{" "}
+          <a
+            href="https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google API Services User Data Policy,
+          </a>{" "}
+          including the Limited Use requirements.
+        </p>
+        <p>
           The Add-On is an AI-powered email writing assistance tool that works
           with Google Workspace and requires certain permissions to operate:
         </p>
+
         <ol className="mb_24">
           <li>
             Reads your email address and column headers to access your email
@@ -95,18 +108,6 @@ function Page() {
         <p>
           If you have any questions or concerns about our Privacy Policy or our
           add-on, please contact us at replygptdev@gmail.com.
-        </p>
-        <p>
-          ReplyGPT's use and transfer to any other app of information received
-          from Google APIs will adhere to the{" "}
-          <a
-            href="https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Google API Services User Data Policy,
-          </a>{" "}
-          including the Limited Use requirements.
         </p>
       </div>
     </div>
