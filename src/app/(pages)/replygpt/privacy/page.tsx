@@ -15,8 +15,8 @@ function Page() {
         </div>
         <h3 className="mb_12">Information Collection And Use</h3>
         <p>
-          ReplyGPT's use and transfer to any other app of information received
-          from Google APIs will adhere to the{" "}
+          ReplyGPT&apos;s use and transfer to any other app of information
+          received from Google APIs will adhere to the{" "}
           <a
             href="https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
             target="_blank"
