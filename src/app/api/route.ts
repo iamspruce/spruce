@@ -25,7 +25,11 @@ export async function POST(request: NextRequest, response: NextResponse) {
       },
       {
         role: "user",
-        content: `write only this chapter: ${chapter}`,
+        content: `write only the: ${chapter}`,
+      },
+      {
+        role: "user",
+        content: `write only using Nigeria project format`,
       },
     ],
     temperature: 0.7,

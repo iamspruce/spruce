@@ -112,6 +112,9 @@ function Page() {
                   name="chapter"
                   id="chapter"
                 >
+                  <option value="Abstract">Write Abstract</option>
+                  <option value="Acknowledgement">Write Acknowledgement</option>
+                  <option value="Outline">Write Outline</option>
                   <option value="Introduction">Chapter I: Introduction</option>
                   <option value="Review of Literature">
                     Chapter II: Review of Literature
