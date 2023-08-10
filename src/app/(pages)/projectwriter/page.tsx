@@ -30,6 +30,8 @@ function Page() {
       },
     });
 
+    console.log(response);
+
     if (response.ok) {
       toast.dismiss();
       toast.success("Your project is ready");
