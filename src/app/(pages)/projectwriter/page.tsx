@@ -44,9 +44,8 @@ function Page() {
         while (true) {
           const { value, done } = await reader.read();
           const chunkValue = decoder.decode(value);
+          console.log(value,chunkValue);
           SetText((prev) => prev + chunkValue);
-
-          console.log(text);
           if (done) {
             endStream = true;
             break;
