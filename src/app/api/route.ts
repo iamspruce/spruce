@@ -42,5 +42,6 @@ export async function POST(request: NextRequest, response: NextResponse) {
   };
 
   const stream = await OpenAIFetch(payload);
+  console.log(stream);
   return new Response(stream);
 }
