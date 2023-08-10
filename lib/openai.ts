@@ -31,7 +31,7 @@ export async function OpenAIFetch(payload: OpenAIResponsePayload) {
     body: JSON.stringify(payload),
   });
 
-  console.log(res) 
+  console.log(res);
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -46,6 +46,7 @@ export async function OpenAIFetch(payload: OpenAIResponsePayload) {
           }
           try {
             const json = JSON.parse(data);
+            console.log(json,json.choices[0].delta?.content);
             const text = json.choices[0].delta?.content || "";
             if (counter < 2 && (text.match(/\n/) || []).length) {
               // this is a prefix character (i.e., "\n\n"), do nothing
