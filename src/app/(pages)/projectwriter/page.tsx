@@ -40,11 +40,12 @@ function Page() {
           return;
         }
         const reader = data.getReader();
+        console.log(reader)
         const decoder = new TextDecoder();
         while (true) {
           const { value, done } = await reader.read();
           const chunkValue = decoder.decode(value);
-          console.log(value,chunkValue);
+          console.log(decoder.decode(value),chunkValue);
           SetText((prev) => prev + chunkValue);
           if (done) {
             endStream = true;
