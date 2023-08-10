@@ -30,10 +30,11 @@ function Page() {
       },
     });
 
-    console.log(response);
+    console.log('response ran',response);
 
     if (response.ok) {
       toast.dismiss();
+      console.log('run next',response.body);
       toast.success("Your project is ready");
 
       try {
