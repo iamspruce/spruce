@@ -30,8 +30,6 @@ function Page() {
       },
     });
 
-    console.log('response ran',response);
-
     if (response.ok) {
       toast.dismiss();
       toast.success("Your project is ready");
@@ -43,12 +41,12 @@ function Page() {
         }
         const reader = data.getReader();
         const decoder = new TextDecoder();
-        console.log('run next',reader);
         while (true) {
           const { value, done } = await reader.read();
           const chunkValue = decoder.decode(value);
-          console.log('run inner',chunkValue);
           SetText((prev) => prev + chunkValue);
+
+          console.log(text);
           if (done) {
             endStream = true;
             break;
