@@ -34,7 +34,6 @@ function Page() {
 
     if (response.ok) {
       toast.dismiss();
-      console.log('run next',response.body);
       toast.success("Your project is ready");
 
       try {
@@ -44,9 +43,11 @@ function Page() {
         }
         const reader = data.getReader();
         const decoder = new TextDecoder();
+        console.log('run next',reader);
         while (true) {
           const { value, done } = await reader.read();
           const chunkValue = decoder.decode(value);
+          console.log('run inner',chunkValue);
           SetText((prev) => prev + chunkValue);
           if (done) {
             endStream = true;
