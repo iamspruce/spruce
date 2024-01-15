@@ -1,5 +1,23 @@
 [
   {
+    "title": "Learn REST APIs by Building a JavaScript Project",
+    "url": "https://www.freecodecamp.org/news/learn-rest-apis-javascript-project/",
+    "description": "In this article, we are going to learn about REST APIs, what they are, and how to use them as a JavaScript developer.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2023/12/desktop-preview-1.jpg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "DECEMBER 11, 2023"
+  },
+  {
+    "title": "How to Build Successful Projects as a Junior Developer",
+    "url": "https://www.freecodecamp.org/news/how-to-build-projects-as-a-junior-developer/",
+    "description": "This article is specifically tailored for junior developers who might be struggling to create their own personal side projects. If you often find yourself relying on tutorials or feel like you lack the creativity to create projects independently, then this article is for you.",
+    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2023/11/scott-graham-5fNmWej4tAA-unsplash.jpg",
+    "author": "Spruce Emmanuel",
+    "platform": "Freecodecamp",
+    "date": "NOVEMBER 21, 2023"
+  },
+  {
     "title": "How to Build a Full Stack App with Next.js 13 and Firebase",
     "url": "https://www.freecodecamp.org/news/create-full-stack-app-with-nextjs13-and-firebase/",
     "description": "In this article, you will learn how to use the new Next.js 13 and Firebase database to build a full stack application.",
@@ -34,15 +52,6 @@
     "author": "Spruce Emmanuel",
     "platform": "Freecodecamp",
     "date": "JUNE 7, 2022"
-  },
-  {
-    "title": "How to Build a Full Stack App with Next.js 13 and Firebase",
-    "url": "https://www.freecodecamp.org/news/create-full-stack-app-with-nextjs13-and-firebase/",
-    "description": "In this article, you will learn how to use the new Next.js 13 and Firebase database to build a full stack application.",
-    "image": "https://www.freecodecamp.org/news/content/images/size/w2000/2023/02/pexels-sevenstorm-juhaszimrus-443383--1-.jpg",
-    "author": "Spruce Emmanuel",
-    "platform": "Freecodecamp",
-    "date": "FEBRUARY 17, 2023"
   },
   {
     "title": "JavaScript Promises for Beginners",

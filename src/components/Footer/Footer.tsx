@@ -37,18 +37,8 @@ function Footer() {
           </p>
           <ul className="footer_items">
             <li className="footer_items_list">
-              <Link href="/replygpt" className="footer_items_link">
-                ReplyGPT
-              </Link>
-            </li>
-            <li className="footer_items_list">
-              <Link href="/projectwriter" className="footer_items_link">
-                Project Writer
-              </Link>
-            </li>
-            <li className="footer_items_list">
-              <Link href="#0" className="footer_items_link">
-                Feedin.bio
+              <Link href="/sprucemarkdownapp" className="footer_items_link">
+                Spruce Markdown App
               </Link>
             </li>
           </ul>
