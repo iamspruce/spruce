@@ -54,6 +54,7 @@
   --surface4: var(--surface4-light);
   --surface-shadow: var(--surface-shadow-light);
   --shadow-strength: var(--shadow-strength-light);
+  --light-on: linear-gradient(15deg, #f7d336 65%, #52ce63 30%);
 }
 
 @media (prefers-color-scheme: dark) {
