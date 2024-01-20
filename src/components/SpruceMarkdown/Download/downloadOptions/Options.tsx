@@ -1,14 +1,3 @@
-import React from "react";
-import {
-  Listbox,
-  ListboxInput,
-  ListboxButton,
-  ListboxPopover,
-  ListboxList,
-  ListboxOption,
-} from "@reach/listbox";
-import "@reach/listbox/styles.css";
-
 function DownloadOptions() {
   return (
     <div className="flex wrap justify_center align_center gap_36 mt_30">

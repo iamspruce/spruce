@@ -47,15 +47,15 @@ function Tabs() {
       <div className="sprucemarkdown_tabs_list">
         <ReachTabs index={tabIndex} onChange={handleTabsChange}>
           <TabList>
-            <Tab>{"/ai> command"}</Tab>
-            <Tab>Headers</Tab>
-            <Tab>Images</Tab>
-            <Tab>Lists</Tab>
-            <Tab>Tables</Tab>
-            <Tab>Code Blocks</Tab>
-            <Tab>Syntex highlight</Tab>
-            <Tab>Task list</Tab>
-            <Tab>Mathematics</Tab>
+            <Tab>{"/ai> command,"}</Tab>
+            <Tab>Headers,</Tab>
+            <Tab>Images,</Tab>
+            <Tab>Lists,</Tab>
+            <Tab>Tables,</Tab>
+            <Tab>Code Blocks,</Tab>
+            <Tab>Syntex highlight,</Tab>
+            <Tab>Task list,</Tab>
+            <Tab>Mathematics,</Tab>
             <Tab>AI Menu</Tab>
           </TabList>
           <div className="wrapper_content mt_30">
