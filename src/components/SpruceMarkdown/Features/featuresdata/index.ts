@@ -1,0 +1,1 @@
+export { default as FeaturesData } from "./features.json";

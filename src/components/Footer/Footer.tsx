@@ -38,7 +38,7 @@ function Footer() {
           <ul className="footer_items">
             <li className="footer_items_list">
               <Link href="/sprucemarkdownapp" className="footer_items_link">
-                Spruce Markdown App
+                Spruce Markdown <br /> App
               </Link>
             </li>
           </ul>

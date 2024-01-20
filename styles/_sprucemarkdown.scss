@@ -20,9 +20,49 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
-    fill: #fecc44;
-    width: 120px;
-    height: 120px;
-    filter: drop-shadow(1px 2px #ecb731);
+    fill: var(--light-on-svg-fill);
+    stroke: var(--light-on-svg-stroke);
+    width: 100px;
+    height: 100px;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 25%));
   }
+}
+.sprucemarkdown_tabs_list {
+  [data-reach-tab-list] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: hsla(0, 0%, 0%, 0.05);
+  }
+}
+.sprucemarkdown__features {
+  &_list {
+    &_item {
+      background-color: var(--surface4);
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      border-radius: 12px;
+
+      h2 {
+        line-height: 8px 24px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      p {
+        flex-grow: 1;
+        padding-top: 8px;
+        line-height: 24px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text2);
+      }
+    }
+  }
+}
+.sprucemarkdown_feature_image {
+  height: auto;
+  box-shadow: var(--surface-shadow) var(--shadow-strength);
 }

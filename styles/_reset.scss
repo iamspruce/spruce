@@ -54,7 +54,9 @@
   --surface4: var(--surface4-light);
   --surface-shadow: var(--surface-shadow-light);
   --shadow-strength: var(--shadow-strength-light);
-  --light-on: linear-gradient(15deg, #f7d336 65%, #52ce63 30%);
+  --light-on: radial-gradient(circle, #fff, #bbb, #888, #444);
+  --light-on-svg-fill: #ddd;
+  --light-on-svg-stroke: #rgba(255, 255, 255, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -70,6 +72,9 @@
     --surface4: var(--surface4-dark);
     --surface-shadow: var(--surface-shadow-dark);
     --shadow-strength: var(--shadow-strength-dark);
+    --light-on: radial-gradient(circle, #fff, #ffd700, #ffae42, #ff5722);
+    --light-on-svg-fill: #ffd700;
+    --light-on-svg-stroke: #rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -85,6 +90,9 @@ html[data-theme="light"] {
   --surface4: var(--surface4-light);
   --surface-shadow: var(--surface-shadow-light);
   --shadow-strength: var(--shadow-strength-light);
+  --light-on: radial-gradient(circle, #fff, #bbb, #888, #444);
+  --light-on-svg-fill: #ddd;
+  --light-on-svg-stroke: #rgba(255, 255, 255, 0.1);
 }
 
 html[data-theme="dark"] {
@@ -99,6 +107,8 @@ html[data-theme="dark"] {
   --surface4: var(--surface4-dark);
   --surface-shadow: var(--surface-shadow-dark);
   --shadow-strength: var(--shadow-strength-dark);
+  --light-on: radial-gradient(circle, #fff, #ffd700, #ffae42, #ff5722);
+  --light-on-svg-stroke: #rgba(255, 255, 255, 0.2);
 }
 
 @supports not (color-scheme: dark) {
