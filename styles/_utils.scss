@@ -32,14 +32,33 @@
 .flex {
   display: flex;
 
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
   &.column {
     flex-direction: column;
   }
   &.align_center {
     align-items: center;
   }
+  &.align_start {
+    align-items: start;
+  }
+  &.justify_start {
+    justify-content: start;
+  }
   &.justify_center {
     justify-content: center;
+  }
+  &.justify_btw {
+    justify-content: space-between;
+  }
+  &.justify_around {
+    justify-content: space-around;
+  }
+  &.gap_4 {
+    gap: 4px;
   }
   &.gap_12 {
     gap: 12px;
@@ -54,6 +73,12 @@
 
 .border_round {
   border-radius: 50%;
+}
+.border_4x {
+  border-radius: 4px;
+}
+.border_11x {
+  border-radius: 11px;
 }
 
 .mt_60 {

@@ -188,6 +188,27 @@
     "@reach/popover" "0.18.0"
     "@reach/utils" "0.18.0"
 
+"@reach/listbox@^0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@reach/listbox/-/listbox-0.18.0.tgz#f495e42950e09c7accc15f022db56a940eb2d970"
+  integrity sha512-EGFMLxBIUNe6ucjZNiyV2xQrMy4/xEm69FIsSPtUJddJytGEIVL7IW+gt7o4mZL9TOetJ15nUE+PUndLg/27ww==
+  dependencies:
+    "@reach/auto-id" "0.18.0"
+    "@reach/descendants" "0.18.0"
+    "@reach/machine" "0.18.0"
+    "@reach/polymorphic" "0.18.0"
+    "@reach/popover" "0.18.0"
+    "@reach/utils" "0.18.0"
+    tiny-invariant "^1.2.0"
+
+"@reach/machine@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@reach/machine/-/machine-0.18.0.tgz#28b04680024e24d5b76ab8ddc9ab8ec0d0165a74"
+  integrity sha512-rgvDRWicIcVXrFPBtH13AjLbN423Cgmtl3VMWJeoOaCKSqeoUighnBsyD35u3KW77nK0r8LBNWSo3O2XCZcO1g==
+  dependencies:
+    "@reach/utils" "0.18.0"
+    "@xstate/fsm" "1.4.0"
+
 "@reach/menu-button@^0.18.0":
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/@reach/menu-button/-/menu-button-0.18.0.tgz#ae40dc86e47e7f925599ca720e3ba65263cc56f3"
@@ -248,6 +269,13 @@
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/@reach/utils/-/utils-0.18.0.tgz#4f3cebe093dd436eeaff633809bf0f68f4f9d2ee"
   integrity sha512-KdVMdpTgDyK8FzdKO9SCpiibuy/kbv3pwgfXshTI6tEcQT1OOwj7BAksnzGC0rPz0UholwC+AgkqEl3EJX3M1A==
+
+"@reach/visually-hidden@^0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@reach/visually-hidden/-/visually-hidden-0.18.0.tgz#17923c08acc5946624c2836b2b09d359b3aa8c27"
+  integrity sha512-NsJ3oeHJtPc6UOeV6MHMuzQ5sl1ouKhW85i3C0S7VM+klxVlYScBZ2J4UVnWB50A2c+evdVpCnld2YeuyYYwBw==
+  dependencies:
+    "@reach/polymorphic" "0.18.0"
 
 "@rushstack/eslint-patch@^1.1.3":
   version "1.2.0"
@@ -349,6 +377,11 @@
   dependencies:
     "@typescript-eslint/types" "5.50.0"
     eslint-visitor-keys "^3.3.0"
+
+"@xstate/fsm@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@xstate/fsm/-/fsm-1.4.0.tgz#6fd082336fde4d026e9e448576189ee5265fa51a"
+  integrity sha512-uTHDeu2xI5E1IFwf37JFQM31RrH7mY7877RqPBS4ZqSNUwoLDuct8AhBWaXGnVizBAYyimVwgCyGa9z/NiRhXA==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
@@ -2412,6 +2445,11 @@ tiny-glob@^0.2.9:
   dependencies:
     globalyzer "0.1.0"
     globrex "^0.1.2"
+
+tiny-invariant@^1.2.0:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.3.1.tgz#8560808c916ef02ecfd55e66090df23a4b7aa642"
+  integrity sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==
 
 to-regex-range@^5.0.1:
   version "5.0.1"

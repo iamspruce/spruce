@@ -3,6 +3,7 @@ import Features from "@/components/SpruceMarkdown/Features";
 import { Logo } from "./logo";
 import Tabs from "@/components/SpruceMarkdown/Tabs";
 import Themes from "@/components/SpruceMarkdown/Themes";
+import Download from "@/components/SpruceMarkdown/Download";
 
 function Page() {
   return (
@@ -23,6 +24,7 @@ function Page() {
       <Features />
       <Tabs />
       <Themes />
+      <Download />
     </>
   );
 }

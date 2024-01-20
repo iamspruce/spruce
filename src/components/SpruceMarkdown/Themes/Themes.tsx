@@ -6,7 +6,7 @@ function Themes() {
     <div className="sprucemarkdown_themes mt_60 flex column align_center text_center justify_center gap_24">
       <h3>Custom Themes</h3>
       <p>
-        Choose the best theme for your editor, plenty of themes to choose from
+        Choose the best theme for your editor, plenty of themes to choose from.
       </p>
       <div className=" flex wrappe_content">
         <Image

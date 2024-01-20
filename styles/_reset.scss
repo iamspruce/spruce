@@ -185,6 +185,9 @@ ol {
 }
 select {
   appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-prefix-chevron-down' id='icon-prefix-chevron-down' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9' fill='none' stroke-linecap='round' stroke-width='4' stroke='black' %3E%3C/polyline%3E%3C/svg%3E%0A");
+  background-repeat: no-repeat;
+  background-position: 100% 50%;
 }
 pre {
   white-space: break-spaces;

@@ -66,3 +66,22 @@
   height: auto;
   box-shadow: var(--surface-shadow) var(--shadow-strength);
 }
+
+.sprucemarkdown_btn {
+  background-color: var(--surface4);
+  text-decoration: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  min-width: 20px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  vertical-align: middle;
+  width: 180px;
+}
+.sprucemarkdown_select {
+  width: 20px;
+}
