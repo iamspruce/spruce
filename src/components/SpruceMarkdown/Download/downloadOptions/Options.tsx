@@ -9,7 +9,7 @@ function DownloadOptions() {
       </a>
       <div className="flex">
         <a
-          href="https://github.com/iamspruce/Spruce-Markdown-App/releases/download/v1.0.1/Spruce-Markdown-App-darwin-x64-1.0.1.zip"
+          href="https://github.com/iamspruce/Spruce-Markdown-App/releases/download/v1.0.0/Spruce-Markdown-App-darwin-x64-1.0.1.zip"
           className="sprucemarkdown_btn flex gap_12"
         >
           <span>
