@@ -1,0 +1,116 @@
+{
+  "models": [
+    {
+      "id": "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF:tinyllama-1.1b-chat-v1.0.Q4_K_S.gguf",
+      "displayName": "TinyLlama 1.1B",
+      "size": "1.1 GB",
+      "description": "A compact and speedy model, perfect for everyday conversations and quick questions. It's the fastest to download and uses the least memory.",
+      "strengths": [
+        "Very fast responses",
+        "Low memory usage",
+        "Great for basic chat"
+      ],
+      "limitations": [
+        "Limited reasoning ability",
+        "Less creative than larger models"
+      ],
+      "tags": ["fast", "efficient", "beginner-friendly"]
+    },
+    {
+      "id": "microsoft/Phi-3-mini-4k-instruct-gguf:Phi-3-mini-4k-instruct-q4.gguf",
+      "displayName": "Phi-3 Mini Instruct",
+      "size": "2.38 GB",
+      "description": "A powerful small model from Microsoft that punches well above its weight class in reasoning and logic tasks. Excellent performance for its size.",
+      "strengths": [
+        "Top-tier reasoning for a small model",
+        "Very high-quality responses",
+        "Fast and efficient"
+      ],
+      "limitations": [
+        "Less general knowledge than huge models",
+        "Shorter context memory (4k tokens)"
+      ],
+      "tags": ["small", "powerful", "reasoning"]
+    },
+    {
+      "id": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF:mistral-7b-instruct-v0.2.Q4_K_M.gguf",
+      "displayName": "Mistral 7B Instruct",
+      "size": "4.37 GB",
+      "description": "A high-quality and versatile model that provides a great balance between performance and size. Excellent for writing assistance and complex instructions.",
+      "strengths": [
+        "Strong reasoning skills",
+        "Follows instructions well",
+        "Excellent for writing and summarization"
+      ],
+      "limitations": [
+        "Requires more memory than smaller models",
+        "Slower than TinyLlama"
+      ],
+      "tags": ["balanced", "high-quality", "writing"]
+    },
+    {
+      "id": "TheBloke/CodeLlama-7B-GGUF:codellama-7b.Q4_K_M.gguf",
+      "displayName": "CodeLlama 7B",
+      "size": "4.08 GB",
+      "description": "A specialized model designed for programming and code-related tasks. It can help you write, debug, and understand code in various languages.",
+      "strengths": [
+        "Excellent for code generation",
+        "Understands programming logic",
+        "Supports many programming languages"
+      ],
+      "limitations": [
+        "Not ideal for general conversation",
+        "Can be overly technical"
+      ],
+      "tags": ["coding", "developer", "specialized"]
+    },
+    {
+      "id": "google/gemma-1.1-7b-it-gguf:gemma-1.1-7b-it-Q4_K_M.gguf",
+      "displayName": "Gemma 7B Instruct",
+      "size": "4.56 GB",
+      "description": "Google's high-quality open model, built from the same research as Gemini. Offers a great blend of conversational ability and instruction following.",
+      "strengths": [
+        "Strong safety features",
+        "Good all-around performer",
+        "Backed by Google's research"
+      ],
+      "limitations": [
+        "Can be overly cautious in responses",
+        "Newer, so community support is growing"
+      ],
+      "tags": ["google", "balanced", "gemma"]
+    },
+    {
+      "id": "unsloth/llama-3-8b-Instruct-GGUF:llama-3-8b-instruct.Q4_K_M.gguf",
+      "displayName": "Llama 3 8B Instruct",
+      "size": "4.9 GB",
+      "description": "The latest generation model from Meta, offering state-of-the-art performance in reasoning, conversation, and following complex instructions.",
+      "strengths": [
+        "State-of-the-art reasoning",
+        "Excellent instruction following",
+        "Very creative and knowledgeable"
+      ],
+      "limitations": [
+        "Slightly larger file size",
+        "Requires a capable system for best performance"
+      ],
+      "tags": ["state-of-the-art", "llama-3", "powerful"]
+    },
+    {
+      "id": "TheBloke/Llama-2-13B-chat-GGUF:llama-2-13b-chat.Q4_K_M.gguf",
+      "displayName": "Llama 2 13B Chat",
+      "size": "7.87 GB",
+      "description": "A powerful and creative model that excels at generating detailed text and engaging in more nuanced conversations. Ideal for creative writing and in-depth discussions.",
+      "strengths": [
+        "Highly creative and detailed",
+        "Strong conversational skills",
+        "Good for brainstorming and storytelling"
+      ],
+      "limitations": [
+        "Requires significant memory and storage",
+        "Slower response times"
+      ],
+      "tags": ["creative", "powerful", "conversational"]
+    }
+  ]
+}
