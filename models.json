@@ -3,113 +3,246 @@
     {
       "id": "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF:tinyllama-1.1b-chat-v1.0.Q4_K_S.gguf",
       "displayName": "TinyLlama 1.1B",
-      "size": "1.1 GB",
-      "description": "A compact and speedy model, perfect for everyday conversations and quick questions. It's the fastest to download and uses the least memory.",
-      "strengths": [
-        "Very fast responses",
-        "Low memory usage",
-        "Great for basic chat"
-      ],
-      "limitations": [
-        "Limited reasoning ability",
-        "Less creative than larger models"
-      ],
+      "creator": "Community Favorite",
+      "last_updated": "July 2025",
+      "popularity_label": "Beginner's Choice",
+      "what_it_does": {
+        "nutshell": "A compact and speedy model, perfect for everyday conversations and quick questions.",
+        "best_for": [
+          "Asking quick questions",
+          "Basic summarization",
+          "Fast, simple chat"
+        ],
+        "personality_preview": {
+          "user_prompt": "What's the capital of Nigeria?",
+          "model_response": "The capital of Nigeria is Abuja! It's a planned city built in the 1980s."
+        },
+        "heads_up": [
+          "Has limited reasoning ability for complex problems.",
+          "Less creative than the larger models."
+        ]
+      },
+      "will_it_work": {
+        "requirements": {
+          "memory": "At least 4 GB of Memory (RAM)",
+          "storage": "Takes up 1.1 GB of space"
+        },
+        "performance_analogy": "Responds as fast as sending a text message."
+      },
+      "the_download": {
+        "size_gb": 1.1,
+        "time_estimate_analogy": "Done in the time it takes to brew a cup of coffee."
+      },
       "tags": ["fast", "efficient", "beginner-friendly"]
     },
     {
       "id": "microsoft/Phi-3-mini-4k-instruct-gguf:Phi-3-mini-4k-instruct-q4.gguf",
       "displayName": "Phi-3 Mini Instruct",
-      "size": "2.38 GB",
-      "description": "A powerful small model from Microsoft that punches well above its weight class in reasoning and logic tasks. Excellent performance for its size.",
-      "strengths": [
-        "Top-tier reasoning for a small model",
-        "Very high-quality responses",
-        "Fast and efficient"
-      ],
-      "limitations": [
-        "Less general knowledge than huge models",
-        "Shorter context memory (4k tokens)"
-      ],
+      "creator": "From Microsoft",
+      "last_updated": "June 2025",
+      "popularity_label": "The Smart Compact",
+      "what_it_does": {
+        "nutshell": "A powerful small model that's surprisingly good at reasoning and logic.",
+        "best_for": [
+          "Solving logic puzzles",
+          "Answering complex questions accurately",
+          "High-quality chat on most computers"
+        ],
+        "personality_preview": {
+          "user_prompt": "A man is looking at a portrait. Someone asks him whose portrait he is looking at. He replies, 'Brothers and sisters I have none, but that man's father is my father's son.' Who is in the portrait?",
+          "model_response": "The man is looking at a portrait of his own son!"
+        },
+        "heads_up": [
+          "Has less general knowledge than the huge models.",
+          "Can't remember very long conversations."
+        ]
+      },
+      "will_it_work": {
+        "requirements": {
+          "memory": "At least 6 GB of Memory (RAM)",
+          "storage": "Takes up 2.4 GB of space"
+        },
+        "performance_analogy": "Performs like a high-end calculator for complex problems."
+      },
+      "the_download": {
+        "size_gb": 2.38,
+        "time_estimate_analogy": "About as long as a short YouTube video."
+      },
       "tags": ["small", "powerful", "reasoning"]
     },
     {
       "id": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF:mistral-7b-instruct-v0.2.Q4_K_M.gguf",
       "displayName": "Mistral 7B Instruct",
-      "size": "4.37 GB",
-      "description": "A high-quality and versatile model that provides a great balance between performance and size. Excellent for writing assistance and complex instructions.",
-      "strengths": [
-        "Strong reasoning skills",
-        "Follows instructions well",
-        "Excellent for writing and summarization"
-      ],
-      "limitations": [
-        "Requires more memory than smaller models",
-        "Slower than TinyLlama"
-      ],
+      "creator": "Community Favorite",
+      "last_updated": "May 2025",
+      "popularity_label": "The All-Rounder",
+      "what_it_does": {
+        "nutshell": "A high-quality and versatile model that provides a great balance of speed and power.",
+        "best_for": [
+          "Writing and editing emails or documents",
+          "Following detailed instructions",
+          "Summarizing long texts"
+        ],
+        "personality_preview": {
+          "user_prompt": "Draft a short, polite email to my team letting them know the weekly meeting is moved to 3 PM.",
+          "model_response": "Subject: Weekly Meeting Time Change\n\nHi Team,\n\nA quick heads-up that our weekly meeting has been moved to 3 PM this week. Please adjust your calendars accordingly. See you then!\n\nBest,"
+        },
+        "heads_up": [
+          "Needs more memory than the smaller models.",
+          "A bit slower than TinyLlama and Phi-3."
+        ]
+      },
+      "will_it_work": {
+        "requirements": {
+          "memory": "At least 8 GB of Memory (RAM)",
+          "storage": "Takes up 4.4 GB of space"
+        },
+        "performance_analogy": "Runs like a web browser with several tabs open."
+      },
+      "the_download": {
+        "size_gb": 4.37,
+        "time_estimate_analogy": "About the length of a music album."
+      },
       "tags": ["balanced", "high-quality", "writing"]
     },
     {
       "id": "TheBloke/CodeLlama-7B-GGUF:codellama-7b.Q4_K_M.gguf",
       "displayName": "CodeLlama 7B",
-      "size": "4.08 GB",
-      "description": "A specialized model designed for programming and code-related tasks. It can help you write, debug, and understand code in various languages.",
-      "strengths": [
-        "Excellent for code generation",
-        "Understands programming logic",
-        "Supports many programming languages"
-      ],
-      "limitations": [
-        "Not ideal for general conversation",
-        "Can be overly technical"
-      ],
+      "creator": "From Meta",
+      "last_updated": "April 2025",
+      "popularity_label": "The Developer's Go-To",
+      "what_it_does": {
+        "nutshell": "A specialized model designed to help you write, fix, and understand computer code.",
+        "best_for": [
+          "Generating code from simple descriptions",
+          "Explaining what a piece of code does",
+          "Debugging and finding errors"
+        ],
+        "personality_preview": {
+          "user_prompt": "Write a simple Python function that adds two numbers.",
+          "model_response": "Certainly! Here is a simple Python function to add two numbers:\n\n```python\ndef add_numbers(a, b):\n  return a + b\n```"
+        },
+        "heads_up": [
+          "Not very good for general conversation or creative writing.",
+          "Its answers can be very technical."
+        ]
+      },
+      "will_it_work": {
+        "requirements": {
+          "memory": "At least 8 GB of Memory (RAM)",
+          "storage": "Takes up 4.1 GB of space"
+        },
+        "performance_analogy": "Works like a powerful assistant for your coding software."
+      },
+      "the_download": {
+        "size_gb": 4.08,
+        "time_estimate_analogy": "About the length of a TV show episode."
+      },
       "tags": ["coding", "developer", "specialized"]
     },
     {
       "id": "google/gemma-1.1-7b-it-gguf:gemma-1.1-7b-it-Q4_K_M.gguf",
       "displayName": "Gemma 7B Instruct",
-      "size": "4.56 GB",
-      "description": "Google's high-quality open model, built from the same research as Gemini. Offers a great blend of conversational ability and instruction following.",
-      "strengths": [
-        "Strong safety features",
-        "Good all-around performer",
-        "Backed by Google's research"
-      ],
-      "limitations": [
-        "Can be overly cautious in responses",
-        "Newer, so community support is growing"
-      ],
+      "creator": "From Google",
+      "last_updated": "July 2025",
+      "popularity_label": "The Reliable Choice",
+      "what_it_does": {
+        "nutshell": "Google's high-quality model that's a great, safe all-around performer for chat and instructions.",
+        "best_for": [
+          "Safe and reliable conversations",
+          "Following instructions accurately",
+          "General-purpose tasks and questions"
+        ],
+        "personality_preview": {
+          "user_prompt": "What are some good ways to stay healthy?",
+          "model_response": "Staying healthy involves a few key things! It's important to eat a balanced diet with lots of fruits and vegetables, get regular exercise that you enjoy, and make sure you get enough sleep each night."
+        },
+        "heads_up": [
+          "Can sometimes be overly cautious and refuse to answer harmless questions.",
+          "Community support is still growing."
+        ]
+      },
+      "will_it_work": {
+        "requirements": {
+          "memory": "At least 8 GB of Memory (RAM)",
+          "storage": "Takes up 4.6 GB of space"
+        },
+        "performance_analogy": "Like a helpful and responsible research assistant."
+      },
+      "the_download": {
+        "size_gb": 4.56,
+        "time_estimate_analogy": "About the length of a music album."
+      },
       "tags": ["google", "balanced", "gemma"]
     },
     {
       "id": "unsloth/llama-3-8b-Instruct-GGUF:llama-3-8b-instruct.Q4_K_M.gguf",
       "displayName": "Llama 3 8B Instruct",
-      "size": "4.9 GB",
-      "description": "The latest generation model from Meta, offering state-of-the-art performance in reasoning, conversation, and following complex instructions.",
-      "strengths": [
-        "State-of-the-art reasoning",
-        "Excellent instruction following",
-        "Very creative and knowledgeable"
-      ],
-      "limitations": [
-        "Slightly larger file size",
-        "Requires a capable system for best performance"
-      ],
+      "creator": "From Meta",
+      "last_updated": "August 2025",
+      "popularity_label": "State-of-the-Art",
+      "what_it_does": {
+        "nutshell": "The latest and greatest from Meta, offering top-tier performance in almost every task.",
+        "best_for": [
+          "Advanced reasoning and problem-solving",
+          "Following very complex instructions",
+          "Highly creative and knowledgeable conversations"
+        ],
+        "personality_preview": {
+          "user_prompt": "Give me three marketing slogans for a new coffee shop that's also a bookstore.",
+          "model_response": "1. Where every chapter comes with a coffee.\n2. Get lost in a book, not in the crowd.\n3. Your daily brew, and a new story too."
+        },
+        "heads_up": [
+          "A bit larger to download than other models in its class.",
+          "Needs a good computer to run smoothly."
+        ]
+      },
+      "will_it_work": {
+        "requirements": {
+          "memory": "At least 8 GB of Memory (RAM)",
+          "storage": "Takes up 4.9 GB of space"
+        },
+        "performance_analogy": "Runs like a powerful, modern software application."
+      },
+      "the_download": {
+        "size_gb": 4.9,
+        "time_estimate_analogy": "About as long as a feature podcast episode."
+      },
       "tags": ["state-of-the-art", "llama-3", "powerful"]
     },
     {
       "id": "TheBloke/Llama-2-13B-chat-GGUF:llama-2-13b-chat.Q4_K_M.gguf",
       "displayName": "Llama 2 13B Chat",
-      "size": "7.87 GB",
-      "description": "A powerful and creative model that excels at generating detailed text and engaging in more nuanced conversations. Ideal for creative writing and in-depth discussions.",
-      "strengths": [
-        "Highly creative and detailed",
-        "Strong conversational skills",
-        "Good for brainstorming and storytelling"
-      ],
-      "limitations": [
-        "Requires significant memory and storage",
-        "Slower response times"
-      ],
+      "creator": "From Meta",
+      "last_updated": "February 2025",
+      "popularity_label": "The Creative Powerhouse",
+      "what_it_does": {
+        "nutshell": "A large, powerful model that excels at creative writing and in-depth discussions.",
+        "best_for": [
+          "Brainstorming and writing stories",
+          "Engaging in deep, nuanced conversations",
+          "Generating highly detailed text"
+        ],
+        "personality_preview": {
+          "user_prompt": "Give me an opening line for a fantasy novel about a librarian.",
+          "model_response": "The only thing more dangerous than a dragon in the kingdom of Aeridor was a librarian with an overdue book."
+        },
+        "heads_up": [
+          "Requires a powerful computer with lots of memory.",
+          "Response times are noticeably slower."
+        ]
+      },
+      "will_it_work": {
+        "requirements": {
+          "memory": "At least 16 GB of Memory (RAM)",
+          "storage": "Takes up 7.9 GB of space"
+        },
+        "performance_analogy": "Performs like running a modern video game; needs a strong PC."
+      },
+      "the_download": {
+        "size_gb": 7.87,
+        "time_estimate_analogy": "About as long as a short movie."
+      },
       "tags": ["creative", "powerful", "conversational"]
     }
   ]
