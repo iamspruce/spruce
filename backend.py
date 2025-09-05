@@ -7,8 +7,10 @@ import requests
 import io
 import tempfile
 
+# Set Cache Directories to a Persistent Location
 os.environ['HF_HOME'] = '/workspace/cache/huggingface'
 os.environ['TTS_HOME'] = '/workspace/cache/tts'
+os.environ['INSIGHTFACE_HOME'] = '/workspace/cache/insightface'
 
 import cv2
 import numpy as np
@@ -17,12 +19,14 @@ import soundfile as sf
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
 
+# Global Configuration & Setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 TORCH_DTYPE = torch.float16 if torch.cuda.is_available() else torch.float32
 
+# RunPod Auto-Shutdown Service
 class RunPodManager:
-    # ... (no changes here)
+    # ... (no changes in this class)
     def __init__(self):
         self.api_key = os.getenv("RUNPOD_API_KEY")
         self.pod_id = os.getenv("RUNPOD_POD_ID")
@@ -32,7 +36,6 @@ class RunPodManager:
     def stop_pod(self):
         if not self.api_key or not self.pod_id:
             return
-
         logging.info(f"🛑 Stopping RunPod instance {self.pod_id}...")
         url = f"https://api.runpod.io/graphql?api_key={self.api_key}"
         query = f"""
@@ -49,8 +52,9 @@ class RunPodManager:
         except Exception as e:
             logging.error(f"❌ Failed to send stop command: {e}")
 
+# Face Swap Service (In-Memory)
 class FaceSwapService:
-    # ... (no changes here)
+    # ... (no changes in this class)
     def __init__(self):
         logging.info("Loading Face Analysis and Swapper models...")
         from insightface.app import FaceAnalysis
@@ -80,7 +84,9 @@ class FaceSwapService:
         _, buffer = cv2.imencode('.jpg', frame)
         return buffer.tobytes()
 
+# Zero-Shot Voice Clone Service (In-Memory)
 class VoiceCloneService:
+    # ... (no changes in __init__ or convert_voice)
     def __init__(self):
         logging.info("Loading STT and TTS models...")
         from transformers import pipeline
@@ -98,9 +104,12 @@ class VoiceCloneService:
                 tmpfile.write(audio_bytes)
                 tmp_path = tmpfile.name
             
-            # **FIX:** Get the sample rate from the file info and pass it to the function
-            info = sf.info(tmp_path)
-            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(tmp_path, info.samplerate)
+            # **FIX:** Load the audio file into a tensor before passing it to the function
+            audio_data, sample_rate = sf.read(tmp_path)
+            audio_tensor = torch.FloatTensor(audio_data).unsqueeze(0)
+            
+            # **FIX:** Call the function with the audio tensor and sample rate
+            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(audio_tensor, sample_rate)
             
             os.remove(tmp_path)
             logging.info("✅ Voice fingerprint created.")
@@ -108,15 +117,11 @@ class VoiceCloneService:
             logging.error(f"❌ Failed to prepare voice: {e}", exc_info=True)
 
     def convert_voice(self, audio_bytes: bytes) -> bytes:
-        # ... (no changes here)
         if self.speaker_embedding is None or self.gpt_cond_latent is None:
             return audio_bytes
         
         try:
             with io.BytesIO(audio_bytes) as audio_file:
-                # We need to handle different audio formats. FFmpeg can do this, but for simplicity,
-                # we will assume the browser sends a format that soundfile can read.
-                # A more robust solution would use a library like pydub to convert to WAV first.
                 transcription = self.stt_pipe(audio_file.read())["text"]
 
             if not transcription.strip():
@@ -140,6 +145,7 @@ class VoiceCloneService:
             logging.error(f"❌ Voice conversion failed: {e}", exc_info=True)
             return audio_bytes
 
+# FastAPI Application
 app = FastAPI()
 runpod_manager = RunPodManager()
 face_swapper = FaceSwapService()
@@ -147,7 +153,7 @@ voice_cloner = VoiceCloneService()
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    # ... (no changes here)
+    # ... (no changes in this function)
     await websocket.accept()
     logging.info("✅ Frontend connected.")
     try:
@@ -183,4 +189,11 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception as e:
         logging.error(f"❌ WebSocket error: {e}", exc_info=True)
     finally:
-        runpod_manager.stop_pod()
+        pass
+
+@app.post("/shutdown")
+async def shutdown_pod():
+    # ... (no changes in this function)
+    logging.info("Received shutdown request from client.")
+    runpod_manager.stop_pod()
+    return {"status": "shutdown sequence initiated"}
