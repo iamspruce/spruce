@@ -23,7 +23,7 @@ pip install opencv-python numpy==1.23.5 soundfile
 pip install onnxruntime-gpu
 pip install insightface==0.7.3
 # Install PyTorch for CUDA 12.1 (matches the recommended Docker image)
-pip install torch torchvision torchaudio
+pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu121
 # Install Coqui TTS for voice cloning and Transformers for STT
 pip install TTS
 pip install transformers accelerate optimum
