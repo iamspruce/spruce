@@ -5,6 +5,7 @@ import os
 import sys
 import requests
 import io
+import tempfile
 
 import cv2
 import numpy as np
@@ -85,42 +86,64 @@ class VoiceCloneService:
         from TTS.api import TTS
         self.stt_pipe = pipeline("automatic-speech-recognition", model="distil-whisper/distil-large-v2", torch_dtype=TORCH_DTYPE, device=DEVICE)
         self.tts_pipe = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=torch.cuda.is_available())
-        self.speaker_latents = None
+        # **FIX:** Initialize the correct attributes for storing the voice fingerprint
+        self.speaker_embedding = None
+        self.gpt_cond_latent = None
         logging.info("✅ Voice models loaded.")
 
     def prepare_voice(self, audio_bytes: bytes):
         logging.info("Analyzing source audio to create voice fingerprint...")
-        with io.BytesIO(audio_bytes) as audio_file:
-            # Coqui TTS can compute latents directly from a file path-like object
-            self.speaker_latents = self.tts_pipe.get_speaker_latents(audio_file)
-        logging.info("✅ Voice fingerprint created.")
+        try:
+            # **FIX:** The TTS model needs a file path, so we save the audio to a temporary file
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
+                tmpfile.write(audio_bytes)
+                tmp_path = tmpfile.name
+            
+            # **FIX:** Call the correct method to get the voice fingerprint (which returns two tensors)
+            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(tmp_path)
+            
+            # Clean up the temporary file
+            os.remove(tmp_path)
+            
+            logging.info("✅ Voice fingerprint created.")
+        except Exception as e:
+            logging.error(f"❌ Failed to prepare voice: {e}", exc_info=True)
+
 
     def convert_voice(self, audio_bytes: bytes) -> bytes:
-        if not self.speaker_latents: return audio_bytes
+        # **FIX:** Check if both parts of the fingerprint exist
+        if self.speaker_embedding is None or self.gpt_cond_latent is None:
+            return audio_bytes
         
-        # 1. Speech-to-Text (STT)
-        with io.BytesIO(audio_bytes) as audio_file:
-            transcription = self.stt_pipe(audio_file.read())["text"]
+        try:
+            # 1. Speech-to-Text (STT)
+            with io.BytesIO(audio_bytes) as audio_file:
+                transcription = self.stt_pipe(audio_file.read())["text"]
 
-        if not transcription.strip():
-            return audio_bytes # Return original audio if no speech is detected
+            if not transcription.strip():
+                return audio_bytes # Return original audio if no speech is detected
 
-        # 2. Text-to-Speech (TTS) with cloned voice
-        wav_chunks = []
-        # XTTS generates audio in chunks
-        for chunk in self.tts_pipe.tts_stream(
-            text=transcription,
-            language="en",
-            speaker_latents=self.speaker_latents,
-            speed=1.0,
-        ):
-            wav_chunks.append(chunk.cpu().numpy())
-        
-        # Combine chunks and convert back to bytes
-        full_audio = np.concatenate(wav_chunks)
-        with io.BytesIO() as out_wav_file:
-            sf.write(out_wav_file, full_audio, 24000, format='WAV')
-            return out_wav_file.getvalue()
+            # 2. Text-to-Speech (TTS) with cloned voice
+            wav_chunks = []
+            # **FIX:** Pass the correct parameters for voice cloning
+            for chunk in self.tts_pipe.tts_stream(
+                text=transcription,
+                language="en",
+                speaker_embedding=self.speaker_embedding,
+                gpt_cond_latent=self.gpt_cond_latent,
+                speed=1.0,
+            ):
+                wav_chunks.append(chunk.cpu().numpy())
+            
+            # Combine chunks and convert back to bytes
+            full_audio = np.concatenate(wav_chunks)
+            with io.BytesIO() as out_wav_file:
+                sf.write(out_wav_file, full_audio, 24000, format='WAV')
+                return out_wav_file.getvalue()
+        except Exception as e:
+            logging.error(f"❌ Voice conversion failed: {e}", exc_info=True)
+            return audio_bytes
+
 
 # --- 🚀 FastAPI Application ---
 app = FastAPI()
