@@ -18,13 +18,16 @@ echo "--- Now in directory: $(pwd) ---"
 python3.10 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
+
+# --- FIX: Set environment variables for persistent caching ---
+export HF_HOME='/workspace/cache/huggingface'
+export TTS_HOME='/workspace/cache/tts'
+
 pip install uvicorn fastapi python-multipart "websockets>=10.0" requests
 pip install opencv-python numpy==1.23.5 soundfile
 pip install onnxruntime-gpu
 pip install insightface==0.7.3
-# Install PyTorch for CUDA 12.1 (matches the recommended Docker image)
-pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu121
-# Install Coqui TTS for voice cloning and Transformers for STT
+pip install torch==2.3.1 torchvision==0.18.1 torchio==0.19.1 --index-url https://download.pytorch.org/whl/cu121
 pip install TTS
 pip install transformers accelerate optimum
 
@@ -32,7 +35,7 @@ pip install transformers accelerate optimum
 aria2c -c -x 16 -s 16 -k 1M https://huggingface.co/ezioruan/inswapper_128.onnx/resolve/main/inswapper_128.onnx -d . -o inswapper_128.onnx
 
 # --- Part 4: Pre-cache Voice Models ---
-# This script will download the STT and TTS models so the first launch is fast
+# This script will now use the environment variables set above
 cat <<EOF > cache_models.py
 import torch
 from TTS.api import TTS
@@ -61,7 +64,6 @@ except Exception as e:
 print("Model caching complete.")
 EOF
 
-# Run the caching script
 python cache_models.py
 
 echo "--- ✅ Setup Complete! ---"
