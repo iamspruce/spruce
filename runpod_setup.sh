@@ -22,6 +22,7 @@ pip install --upgrade pip
 # --- FIX: Set environment variables for persistent caching ---
 export HF_HOME='/workspace/cache/huggingface'
 export TTS_HOME='/workspace/cache/tts'
+export INSIGHTFACE_HOME='/workspace/cache/insightface'
 
 pip install uvicorn fastapi python-multipart "websockets>=10.0" requests
 pip install opencv-python numpy==1.23.5 soundfile
