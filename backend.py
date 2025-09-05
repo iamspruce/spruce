@@ -19,8 +19,10 @@ sys.path.append('/workspace/Retrieval-based-Voice-Conversion-WebUI')
 
 # --- 3. IMPORT RVC (FaceFusion will be called via command line) ---
 try:
-    from RVC.infer.modules.vc.modules import VC
-    from RVC.configs.config import Config
+    # --- FIX: Corrected import paths ---
+    # The RVC project's folders are 'infer' and 'configs' at the top level.
+    from infer.modules.vc.modules import VC
+    from configs.config import Config
     logging.info("Successfully imported RVC modules.")
 except ImportError as e:
     logging.error(f"Failed to import RVC modules. Make sure the setup script ran correctly. Error: {e}")
@@ -172,6 +174,4 @@ async def websocket_endpoint(websocket: WebSocket):
         logging.error(f"An error occurred in the websocket: {e}", exc_info=True)
     finally:
         logging.info("Closing websocket connection.")
-
-
 
