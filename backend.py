@@ -8,38 +8,26 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
 import logging
 import aiofiles
-import cv2
-import numpy as np
-import torch
+import subprocess # We will use this to call FaceFusion
 
 # --- 1. SETUP LOGGING ---
-# This helps us see what's happening in the RunPod logs.
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# --- 2. ADD AI LIBRARIES TO PYTHON PATH ---
-# This allows our script to find and import the code from FaceFusion and RVC.
-sys.path.append('/workspace/facefusion')
+# --- 2. ADD RVC TO PYTHON PATH ---
+# We only need RVC for direct import
 sys.path.append('/workspace/Retrieval-based-Voice-Conversion-WebUI')
 
-# --- 3. IMPORT CORE AI FUNCTIONALITY ---
-# We wrap these imports in a try-except block to give helpful errors if they fail.
+# --- 3. IMPORT RVC (FaceFusion will be called via command line) ---
 try:
-    # FaceFusion core function for processing frames.
-    from facefusion.core import process_image, process_frame, get_face_reference, set_face_reference
-    from facefusion.utilities import resolve_relative_path
-    
-    # RVC core classes and functions for voice conversion.
     from RVC.infer.modules.vc.modules import VC
     from RVC.configs.config import Config
-    logging.info("Successfully imported FaceFusion and RVC modules.")
+    logging.info("Successfully imported RVC modules.")
 except ImportError as e:
-    logging.error(f"Failed to import AI modules. Make sure the setup script ran correctly. Error: {e}")
-    # Exit if we can't import the core tools.
+    logging.error(f"Failed to import RVC modules. Make sure the setup script ran correctly. Error: {e}")
     sys.exit(1)
 
 
 # --- 4. IDLE AUTO-SHUTDOWN ---
-# This class will automatically stop the pod if it's idle for too long.
 class IdleShutdownManager:
     def __init__(self, timeout_minutes=15):
         self.timeout_seconds = timeout_minutes * 60
@@ -58,169 +46,132 @@ class IdleShutdownManager:
 
     def _shutdown(self):
         logging.warning("Server is idle. Initiating shutdown sequence.")
-        # The 'runpodctl' command is a tool within RunPod to manage the pod.
         os.system("runpodctl remove pod $RUNPOD_POD_ID")
 
 # --- 5. AI WRAPPER CLASSES ---
-# These classes make it easier to interact with the AI models.
 
 class FaceFusionWrapper:
     def __init__(self):
-        self.source_face = None
-        logging.info("FaceFusion Wrapper initialized.")
+        # Paths to the FaceFusion executable and our working files
+        self.facefusion_path = "/workspace/facefusion/run.py"
+        self.source_face_path = "/workspace/source_face.png"
+        self.target_frame_path = "/workspace/target_frame.jpg"
+        self.output_frame_path = "/workspace/output_frame.jpg"
+        logging.info("FaceFusion Wrapper (Subprocess) initialized.")
 
-    def set_source_face(self, image_path: str):
-        """Analyzes and sets the source face from an image file."""
+    def set_source_face(self, image_bytes: bytes) -> bool:
+        """Saves the source face image to a file."""
         try:
-            # This is a key FaceFusion function to get the face data.
-            face_ref = get_face_reference(image_path)
-            if face_ref:
-                set_face_reference(image_path, face_ref)
-                self.source_face = image_path
-                logging.info(f"Successfully set source face from {image_path}")
-                return True
-            else:
-                logging.error(f"No face found in the source image: {image_path}")
-                return False
+            with open(self.source_face_path, "wb") as f:
+                f.write(image_bytes)
+            logging.info(f"Source face saved to {self.source_face_path}")
+            return True
         except Exception as e:
-            logging.error(f"Error setting source face: {e}")
+            logging.error(f"Error saving source face: {e}")
             return False
 
     def swap_frame(self, target_frame_bytes: bytes) -> bytes:
-        """Swaps the face in a single video frame."""
-        if not self.source_face:
-            logging.warning("Source face not set. Returning original frame.")
-            return target_frame_bytes
+        """
+        Swaps face by calling FaceFusion's command-line interface.
+        This is a robust, "black box" approach.
+        """
         try:
-            # Convert bytes to a NumPy array for image processing
-            np_arr = np.frombuffer(target_frame_bytes, np.uint8)
-            target_frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+            # 1. Save the incoming target frame to a temporary file
+            with open(self.target_frame_path, "wb") as f:
+                f.write(target_frame_bytes)
 
-            # The core FaceFusion real-time processing function
-            result_frame = process_frame(
-                source_path=self.source_face,
-                target_frame=target_frame
-            )
+            # 2. Construct and run the command-line command
+            command = [
+                "python", self.facefusion_path,
+                "-s", self.source_face_path,
+                "-t", self.target_frame_path,
+                "-o", self.output_frame_path,
+                "--headless" # Important: runs without a GUI
+            ]
             
-            # Encode the result back to JPEG bytes to send over the network
-            _, buffer = cv2.imencode('.jpg', result_frame)
-            return buffer.tobytes()
-        except Exception as e:
-            logging.error(f"Error swapping frame: {e}")
-            return target_frame_bytes # Return original on error
+            # This executes the command and waits for it to finish
+            subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-class RVCWrapper:
-    def __init__(self):
-        # Setup RVC configuration
-        self.config = Config()
-        self.vc = VC(self.config)
-        self.target_voice_path = None
-        logging.info("RVC Wrapper initialized.")
+            # 3. Read the resulting output image
+            if os.path.exists(self.output_frame_path):
+                with open(self.output_frame_path, "rb") as f:
+                    result_bytes = f.read()
+                return result_bytes
+            else:
+                logging.error("FaceFusion did not produce an output file.")
+                return target_frame_bytes # Return original on error
 
-    def setup_voice(self, voice_model_path: str):
-        """Loads the target voice model for conversion."""
-        try:
-            # TODO: Find the exact function in RVC to pre-load a model.
-            # This step is crucial for low-latency conversion.
-            self.target_voice_path = voice_model_path
-            logging.info(f"RVC target voice model set to: {voice_model_path}")
-            return True
+        except subprocess.CalledProcessError as e:
+            # This catches errors if the FaceFusion script itself fails
+            logging.error(f"FaceFusion script failed with exit code {e.returncode}")
+            logging.error(f"Stderr: {e.stderr.decode()}")
+            return target_frame_bytes
         except Exception as e:
-            logging.error(f"Error setting up RVC voice: {e}")
-            return False
+            logging.error(f"An error occurred in swap_frame: {e}")
+            return target_frame_bytes
 
-    def convert_audio(self, input_audio_path: str) -> bytes:
-        """Converts an audio chunk using the target voice."""
-        if not self.target_voice_path:
-            logging.warning("RVC target voice not set. Returning original audio.")
-            async def read_original():
-                async with aiofiles.open(input_audio_path, "rb") as f:
-                    return await f.read()
-            return asyncio.run(read_original())
-        try:
-            # TODO: This is a conceptual call to the RVC inference.
-            # You will need to find the specific function in the RVC library
-            # that takes an input audio path and returns the converted audio bytes.
-            # Example placeholder:
-            # converted_audio_bytes = self.vc.vc_inference(
-            #     model_path=self.target_voice_path,
-            #     input_audio_path=input_audio_path
-            # )
-            # For the hackathon, we'll just pass through the original audio for now.
-            async def read_original():
-                async with aiofiles.open(input_audio_path, "rb") as f:
-                    return await f.read()
-            return asyncio.run(read_original())
-        
-        except Exception as e:
-            logging.error(f"Error converting audio: {e}")
-            # Fallback to original audio on error
-            async def read_original():
-                async with aiofiles.open(input_audio_path, "rb") as f:
-                    return await f.read()
-            return asyncio.run(read_original())
+
+# --- RVC Wrapper (Placeholder - integration is complex) ---
+# For the hackathon, we will focus on getting the video working first.
+# Voice conversion adds significant latency and complexity.
 
 # --- 6. INITIALIZE FASTAPI APP AND AI WRAPPERS ---
 app = FastAPI()
 shutdown_manager = IdleShutdownManager(timeout_minutes=15)
 swapper = FaceFusionWrapper()
-# voice_converter = RVCWrapper() # TODO: Enable this once RVC integration is complete
 
 # --- 7. DEFINE THE WEBSOCKET ENDPOINT ---
-# This is the main entry point for the frontend connection.
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     logging.info("Frontend connected.")
-    shutdown_manager.record_activity() # Record activity to prevent shutdown
+    shutdown_manager.record_activity()
 
     try:
         # -- Stage 1: Receive Source Face --
         logging.info("Waiting for source face...")
         face_msg = await websocket.receive_json()
         face_bytes = base64.b64decode(face_msg['data'])
-        source_face_path = "/workspace/source_face.png"
-        async with aiofiles.open(source_face_path, "wb") as f:
-            await f.write(face_bytes)
         
-        if not swapper.set_source_face(source_face_path):
-            await websocket.send_json({"status": "error", "message": "No face found in image."})
+        if not swapper.set_source_face(face_bytes):
+            await websocket.send_json({"status": "error", "message": "Could not save source face."})
             return
 
-        # -- Stage 2: Receive Target Voice (Placeholder) --
-        logging.info("Waiting for target voice...")
-        voice_msg = await websocket.receive_json()
-        # TODO: Process the voice file and set up the RVC model.
+        # -- Stage 2: Receive Target Voice (Skipped for now) --
+        logging.info("Waiting for target voice (skipping for video-first demo)...")
+        await websocket.receive_json() # Await message but do nothing with it
 
         # -- Stage 3: Signal Frontend to Go Live --
         await websocket.send_json({"status": "ready"})
-        logging.info("AI models are ready. Starting real-time stream.")
+        logging.info("FaceFusion is ready. Starting real-time video stream.")
 
         # -- Stage 4: Real-time Processing Loop --
         while websocket.client_state == WebSocketState.CONNECTED:
-            shutdown_manager.record_activity() # Keep pod alive
+            shutdown_manager.record_activity()
             
             message = await websocket.receive_json()
             video_frame_bytes = base64.b64decode(message['video'].split(',')[1])
-            # audio_chunk_bytes = base64.b64decode(message['audio'].split(',')[1])
-
-            # Process video
+            
+            # --- VIDEO PROCESSING ---
             swapped_frame_bytes = swapper.swap_frame(video_frame_bytes)
 
-            # Process audio (TODO)
-            # converted_audio_bytes = voice_converter.convert_audio(...)
+            # --- AUDIO PROCESSING (Passthrough) ---
+            # We will just send the original audio back for now
+            audio_chunk_b64 = message['audio'].split(',')[1]
 
             # Send results back to frontend
             response_video_b64 = base64.b64encode(swapped_frame_bytes).decode('utf-8')
             await websocket.send_json({
                 "video": f"data:image/jpeg;base64,{response_video_b64}",
-                # "audio": ...
+                "audio": f"data:audio/wav;base64,{audio_chunk_b64}" # Sending original audio back
             })
 
     except WebSocketDisconnect:
         logging.info("Frontend disconnected.")
     except Exception as e:
-        logging.error(f"An error occurred in the websocket: {e}")
+        logging.error(f"An error occurred in the websocket: {e}", exc_info=True)
     finally:
         logging.info("Closing websocket connection.")
+
+
 
