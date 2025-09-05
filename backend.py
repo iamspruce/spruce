@@ -7,6 +7,9 @@ import requests
 import io
 import tempfile
 
+os.environ['HF_HOME'] = '/workspace/cache/huggingface'
+os.environ['TTS_HOME'] = '/workspace/cache/tts'
+
 import cv2
 import numpy as np
 import torch
@@ -14,13 +17,12 @@ import soundfile as sf
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
 
-# --- ⚙️ Global Configuration & Setup ---
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 TORCH_DTYPE = torch.float16 if torch.cuda.is_available() else torch.float32
 
-# --- 🤖 RunPod Auto-Shutdown Service ---
 class RunPodManager:
+    # ... (no changes here)
     def __init__(self):
         self.api_key = os.getenv("RUNPOD_API_KEY")
         self.pod_id = os.getenv("RUNPOD_POD_ID")
@@ -47,8 +49,8 @@ class RunPodManager:
         except Exception as e:
             logging.error(f"❌ Failed to send stop command: {e}")
 
-# --- 🧑‍🎨 Face Swap Service (In-Memory) ---
 class FaceSwapService:
+    # ... (no changes here)
     def __init__(self):
         logging.info("Loading Face Analysis and Swapper models...")
         from insightface.app import FaceAnalysis
@@ -78,7 +80,6 @@ class FaceSwapService:
         _, buffer = cv2.imencode('.jpg', frame)
         return buffer.tobytes()
 
-# --- 🎤 Zero-Shot Voice Clone Service (In-Memory) ---
 class VoiceCloneService:
     def __init__(self):
         logging.info("Loading STT and TTS models...")
@@ -86,7 +87,6 @@ class VoiceCloneService:
         from TTS.api import TTS
         self.stt_pipe = pipeline("automatic-speech-recognition", model="distil-whisper/distil-large-v2", torch_dtype=TORCH_DTYPE, device=DEVICE)
         self.tts_pipe = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=torch.cuda.is_available())
-        # **FIX:** Initialize the correct attributes for storing the voice fingerprint
         self.speaker_embedding = None
         self.gpt_cond_latent = None
         logging.info("✅ Voice models loaded.")
@@ -94,38 +94,35 @@ class VoiceCloneService:
     def prepare_voice(self, audio_bytes: bytes):
         logging.info("Analyzing source audio to create voice fingerprint...")
         try:
-            # **FIX:** The TTS model needs a file path, so we save the audio to a temporary file
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
                 tmpfile.write(audio_bytes)
                 tmp_path = tmpfile.name
             
-            # **FIX:** Call the correct method to get the voice fingerprint (which returns two tensors)
-            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(tmp_path)
+            # **FIX:** Get the sample rate from the file info and pass it to the function
+            info = sf.info(tmp_path)
+            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(tmp_path, info.samplerate)
             
-            # Clean up the temporary file
             os.remove(tmp_path)
-            
             logging.info("✅ Voice fingerprint created.")
         except Exception as e:
             logging.error(f"❌ Failed to prepare voice: {e}", exc_info=True)
 
-
     def convert_voice(self, audio_bytes: bytes) -> bytes:
-        # **FIX:** Check if both parts of the fingerprint exist
+        # ... (no changes here)
         if self.speaker_embedding is None or self.gpt_cond_latent is None:
             return audio_bytes
         
         try:
-            # 1. Speech-to-Text (STT)
             with io.BytesIO(audio_bytes) as audio_file:
+                # We need to handle different audio formats. FFmpeg can do this, but for simplicity,
+                # we will assume the browser sends a format that soundfile can read.
+                # A more robust solution would use a library like pydub to convert to WAV first.
                 transcription = self.stt_pipe(audio_file.read())["text"]
 
             if not transcription.strip():
-                return audio_bytes # Return original audio if no speech is detected
+                return audio_bytes
 
-            # 2. Text-to-Speech (TTS) with cloned voice
             wav_chunks = []
-            # **FIX:** Pass the correct parameters for voice cloning
             for chunk in self.tts_pipe.tts_stream(
                 text=transcription,
                 language="en",
@@ -135,7 +132,6 @@ class VoiceCloneService:
             ):
                 wav_chunks.append(chunk.cpu().numpy())
             
-            # Combine chunks and convert back to bytes
             full_audio = np.concatenate(wav_chunks)
             with io.BytesIO() as out_wav_file:
                 sf.write(out_wav_file, full_audio, 24000, format='WAV')
@@ -144,8 +140,6 @@ class VoiceCloneService:
             logging.error(f"❌ Voice conversion failed: {e}", exc_info=True)
             return audio_bytes
 
-
-# --- 🚀 FastAPI Application ---
 app = FastAPI()
 runpod_manager = RunPodManager()
 face_swapper = FaceSwapService()
@@ -153,10 +147,10 @@ voice_cloner = VoiceCloneService()
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    # ... (no changes here)
     await websocket.accept()
     logging.info("✅ Frontend connected.")
     try:
-        # Stage 1: Preparation
         config_msg = await websocket.receive_json()
         face_bytes = base64.b64decode(config_msg["source_face"])
         audio_bytes = base64.b64decode(config_msg["source_audio"])
@@ -169,10 +163,8 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.send_json({"status": "ready"})
         logging.info("🚀 System ready. Starting stream processing...")
 
-        # Stage 2: Real-time loop
         while True:
             message = await websocket.receive_json()
-            
             video_bytes = base64.b64decode(message["video"].split(",")[1])
             swapped_bytes = face_swapper.swap_frame(video_bytes)
             response_video = base64.b64encode(swapped_bytes).decode("utf-8")
@@ -191,5 +183,4 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception as e:
         logging.error(f"❌ WebSocket error: {e}", exc_info=True)
     finally:
-        # This is crucial for cost-saving
         runpod_manager.stop_pod()
