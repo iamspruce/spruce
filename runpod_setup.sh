@@ -27,7 +27,7 @@ pip install uvicorn fastapi python-multipart "websockets>=10.0" requests
 pip install opencv-python numpy==1.23.5 soundfile
 pip install onnxruntime-gpu
 pip install insightface==0.7.3
-pip install torch==2.3.1 torchvision==0.18.1 torchio==0.19.1 --index-url https://download.pytorch.org/whl/cu121
+pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu121
 pip install TTS
 pip install transformers accelerate optimum
 
