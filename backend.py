@@ -4,39 +4,48 @@ import os
 import sys
 import threading
 import time
+import logging
+
+import cv2
+import numpy as np
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
-import logging
-import aiofiles
-import subprocess # We will use this to call FaceFusion
 
-# --- 1. SETUP LOGGING ---
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# --- 1. LOGGING ---
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# --- 2. ADD RVC TO PYTHON PATH ---
-# We only need RVC for direct import
-sys.path.append('/workspace/Retrieval-based-Voice-Conversion-WebUI')
+# --- 2. RVC PATH ---
+sys.path.append("/workspace/Retrieval-based-Voice-Conversion-WebUI")
 
-# --- 3. IMPORT RVC (FaceFusion will be called via command line) ---
+# --- 3. IMPORT RVC (just to verify it works, not wired in yet) ---
 try:
-    # --- FIX: Corrected import paths ---
-    # The RVC project's folders are 'infer' and 'configs' at the top level.
     from infer.modules.vc.modules import VC
     from configs.config import Config
-    logging.info("Successfully imported RVC modules.")
+    logging.info("✅ RVC modules imported successfully")
 except ImportError as e:
-    logging.error(f"Failed to import RVC modules. Make sure the setup script ran correctly. Error: {e}")
+    logging.error(f"❌ Failed to import RVC: {e}")
+    sys.exit(1)
+
+# --- 4. FACEFUSION IMPORT ---
+sys.path.append("/workspace/facefusion")
+try:
+    from facefusion import inference
+    from facefusion import choices
+    from facefusion import process
+    logging.info("✅ FaceFusion imported successfully")
+except Exception as e:
+    logging.error(f"❌ Could not import FaceFusion: {e}")
     sys.exit(1)
 
 
-# --- 4. IDLE AUTO-SHUTDOWN ---
+# --- 5. IDLE AUTO-SHUTDOWN ---
 class IdleShutdownManager:
     def __init__(self, timeout_minutes=15):
         self.timeout_seconds = timeout_minutes * 60
         self.last_active_time = time.time()
         self.shutdown_timer = None
         self.timer_lock = threading.Lock()
-        logging.info(f"Idle shutdown manager initialized with a {timeout_minutes}-minute timeout.")
+        logging.info(f"Idle shutdown set to {timeout_minutes} minutes")
 
     def record_activity(self):
         with self.timer_lock:
@@ -47,131 +56,94 @@ class IdleShutdownManager:
             self.shutdown_timer.start()
 
     def _shutdown(self):
-        logging.warning("Server is idle. Initiating shutdown sequence.")
+        logging.warning("⚠️ Server idle, shutting down pod")
         os.system("runpodctl remove pod $RUNPOD_POD_ID")
 
-# --- 5. AI WRAPPER CLASSES ---
 
+# --- 6. FACEFUSION WRAPPER ---
 class FaceFusionWrapper:
     def __init__(self):
-        # Paths to the FaceFusion executable and our working files
-        self.facefusion_path = "/workspace/facefusion/run.py"
-        self.source_face_path = "/workspace/source_face.png"
-        self.target_frame_path = "/workspace/target_frame.jpg"
-        self.output_frame_path = "/workspace/output_frame.jpg"
-        logging.info("FaceFusion Wrapper (Subprocess) initialized.")
+        self.source_face = None
+        logging.info("FaceFusion wrapper initialized")
 
     def set_source_face(self, image_bytes: bytes) -> bool:
-        """Saves the source face image to a file."""
         try:
-            with open(self.source_face_path, "wb") as f:
-                f.write(image_bytes)
-            logging.info(f"Source face saved to {self.source_face_path}")
+            arr = np.frombuffer(image_bytes, np.uint8)
+            self.source_face = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+            if self.source_face is None:
+                raise ValueError("Decoded source face is None")
+            logging.info("✅ Source face loaded in memory")
             return True
         except Exception as e:
-            logging.error(f"Error saving source face: {e}")
+            logging.error(f"❌ Failed to load source face: {e}")
             return False
 
-    def swap_frame(self, target_frame_bytes: bytes) -> bytes:
-        """
-        Swaps face by calling FaceFusion's command-line interface.
-        This is a robust, "black box" approach.
-        """
+    def swap_frame(self, frame_bytes: bytes) -> bytes:
         try:
-            # 1. Save the incoming target frame to a temporary file
-            with open(self.target_frame_path, "wb") as f:
-                f.write(target_frame_bytes)
+            arr = np.frombuffer(frame_bytes, np.uint8)
+            frame = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+            if frame is None or self.source_face is None:
+                return frame_bytes  # fallback
 
-            # 2. Construct and run the command-line command
-            command = [
-                "python", self.facefusion_path,
-                "-s", self.source_face_path,
-                "-t", self.target_frame_path,
-                "-o", self.output_frame_path,
-                "--headless" # Important: runs without a GUI
-            ]
-            
-            # This executes the command and waits for it to finish
-            subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # --- Run FaceFusion pipeline directly ---
+            swapped = process.process_frame(self.source_face, frame)
 
-            # 3. Read the resulting output image
-            if os.path.exists(self.output_frame_path):
-                with open(self.output_frame_path, "rb") as f:
-                    result_bytes = f.read()
-                return result_bytes
-            else:
-                logging.error("FaceFusion did not produce an output file.")
-                return target_frame_bytes # Return original on error
-
-        except subprocess.CalledProcessError as e:
-            # This catches errors if the FaceFusion script itself fails
-            logging.error(f"FaceFusion script failed with exit code {e.returncode}")
-            logging.error(f"Stderr: {e.stderr.decode()}")
-            return target_frame_bytes
+            _, encoded = cv2.imencode(".jpg", swapped)
+            return encoded.tobytes()
         except Exception as e:
-            logging.error(f"An error occurred in swap_frame: {e}")
-            return target_frame_bytes
+            logging.error(f"❌ Face swap failed: {e}")
+            return frame_bytes
 
 
-# --- RVC Wrapper (Placeholder - integration is complex) ---
-# For the hackathon, we will focus on getting the video working first.
-# Voice conversion adds significant latency and complexity.
-
-# --- 6. INITIALIZE FASTAPI APP AND AI WRAPPERS ---
+# --- 7. FASTAPI APP ---
 app = FastAPI()
-shutdown_manager = IdleShutdownManager(timeout_minutes=15)
+shutdown_manager = IdleShutdownManager()
 swapper = FaceFusionWrapper()
 
-# --- 7. DEFINE THE WEBSOCKET ENDPOINT ---
+
+# --- 8. WEBSOCKET ENDPOINT ---
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    logging.info("Frontend connected.")
+    logging.info("Frontend connected")
     shutdown_manager.record_activity()
 
     try:
-        # -- Stage 1: Receive Source Face --
-        logging.info("Waiting for source face...")
+        # Stage 1: Receive source face
         face_msg = await websocket.receive_json()
-        face_bytes = base64.b64decode(face_msg['data'])
-        
+        face_bytes = base64.b64decode(face_msg["data"])
         if not swapper.set_source_face(face_bytes):
-            await websocket.send_json({"status": "error", "message": "Could not save source face."})
+            await websocket.send_json({"status": "error", "message": "Could not save source face"})
             return
 
-        # -- Stage 2: Receive Target Voice (Skipped for now) --
-        logging.info("Waiting for target voice (skipping for video-first demo)...")
-        await websocket.receive_json() # Await message but do nothing with it
+        # Stage 2: Receive target voice (skipped)
+        await websocket.receive_json()
 
-        # -- Stage 3: Signal Frontend to Go Live --
+        # Stage 3: Ready
         await websocket.send_json({"status": "ready"})
-        logging.info("FaceFusion is ready. Starting real-time video stream.")
+        logging.info("System ready, entering realtime loop")
 
-        # -- Stage 4: Real-time Processing Loop --
+        # Stage 4: Processing loop
         while websocket.client_state == WebSocketState.CONNECTED:
             shutdown_manager.record_activity()
-            
             message = await websocket.receive_json()
-            video_frame_bytes = base64.b64decode(message['video'].split(',')[1])
-            
-            # --- VIDEO PROCESSING ---
+
+            video_frame_bytes = base64.b64decode(message["video"].split(",")[1])
             swapped_frame_bytes = swapper.swap_frame(video_frame_bytes)
 
-            # --- AUDIO PROCESSING (Passthrough) ---
-            # We will just send the original audio back for now
-            audio_chunk_b64 = message['audio'].split(',')[1]
+            audio_chunk_b64 = message["audio"].split(",")[1]  # passthrough
 
-            # Send results back to frontend
-            response_video_b64 = base64.b64encode(swapped_frame_bytes).decode('utf-8')
-            await websocket.send_json({
-                "video": f"data:image/jpeg;base64,{response_video_b64}",
-                "audio": f"data:audio/wav;base64,{audio_chunk_b64}" # Sending original audio back
-            })
+            response_video_b64 = base64.b64encode(swapped_frame_bytes).decode("utf-8")
+            await websocket.send_json(
+                {
+                    "video": f"data:image/jpeg;base64,{response_video_b64}",
+                    "audio": f"data:audio/wav;base64,{audio_chunk_b64}",
+                }
+            )
 
     except WebSocketDisconnect:
-        logging.info("Frontend disconnected.")
+        logging.info("Frontend disconnected")
     except Exception as e:
-        logging.error(f"An error occurred in the websocket: {e}", exc_info=True)
+        logging.error(f"❌ WebSocket error: {e}", exc_info=True)
     finally:
-        logging.info("Closing websocket connection.")
-
+        logging.info("Closing connection")
