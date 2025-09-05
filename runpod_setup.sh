@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "--- 🚀 Starting Zero-Shot Avatar Setup ---"
+echo "--- 🚀 Starting Final Zero-Shot WebRTC Avatar Setup ---"
 export PYTHONUNBUFFERED=1
 export PIP_NO_CACHE_DIR=1
 
@@ -19,16 +19,17 @@ python3.10 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 
-# --- FIX: Set environment variables for persistent caching ---
 export HF_HOME='/workspace/cache/huggingface'
 export TTS_HOME='/workspace/cache/tts'
 export INSIGHTFACE_HOME='/workspace/cache/insightface'
 
-pip install uvicorn fastapi python-multipart "websockets>=10.0" requests
+pip install uvicorn fastapi "websockets>=10.0" requests aiohttp
 pip install opencv-python numpy==1.23.5 soundfile
-pip install onnxruntime-gpu
+pip install onnxruntime-gpu==1.17.1
 pip install insightface==0.7.3
 pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu121
+# Install WebRTC, TTS, and Transformers
+pip install aiortc
 pip install TTS
 pip install transformers accelerate optimum
 
@@ -36,7 +37,6 @@ pip install transformers accelerate optimum
 aria2c -c -x 16 -s 16 -k 1M https://huggingface.co/ezioruan/inswapper_128.onnx/resolve/main/inswapper_128.onnx -d . -o inswapper_128.onnx
 
 # --- Part 4: Pre-cache Voice Models ---
-# This script will now use the environment variables set above
 cat <<EOF > cache_models.py
 import torch
 from TTS.api import TTS
@@ -46,10 +46,8 @@ print("Caching Speech-to-Text model (Distil-Whisper)...")
 try:
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     stt_pipe = pipeline(
-        "automatic-speech-recognition",
-        model="distil-whisper/distil-large-v2",
-        torch_dtype=torch.float16,
-        device=device
+        "automatic-speech-recognition", model="distil-whisper/distil-medium.en",
+        torch_dtype=torch.float16, device=device
     )
     print("STT Model cached.")
 except Exception as e:
