@@ -12,6 +12,8 @@ import insightface.model_zoo
 # --- Logging ---
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
+logger = logging.getLogger("avatar-backend")
+
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 # --- FaceSwap Service ---
