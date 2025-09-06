@@ -108,9 +108,9 @@ async def offer(request: Request):
     def on_track(track):
         logger.info("Track received: %s", track.kind)
         if track.kind == "video":
-            pc.addTrack(ProcessedVideoStreamTrack(track))
+            pc.addTrack(ProcessedVideoStreamTrack(track, swapper))
         elif track.kind == "audio":
-            pc.addTrack(ProcessedAudioStreamTrack(track))
+            pc.addTrack(ProcessedAudioStreamTrack(track, vc))
 
     await pc.setRemoteDescription(offer)
     answer = await pc.createAnswer()
