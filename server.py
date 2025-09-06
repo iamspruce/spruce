@@ -357,14 +357,19 @@ async def offer(request: Request):
             pc.addTrack(processed_track)
 
             async def force_keyframe():
+                # give the pipeline a moment to settle
                 await asyncio.sleep(0.5)
-                video_sender = next((s for s in pc.getSenders() if s.track and s.track.kind == "video"), None)
+                video_sender = next(
+                    (s for s in pc.getSenders() if s.track and s.track.kind == "video"),
+                    None
+                )
                 if video_sender:
                     try:
                         await video_sender.send_rtcp_pli()
                         logger.info("PLI sent to request a keyframe from the client")
                     except Exception as e:
                         logger.error(f"Failed to send PLI request: {e}")
+
             
             asyncio.ensure_future(force_keyframe())
         
