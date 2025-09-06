@@ -8,7 +8,7 @@ import json
 import uuid
 import tempfile
 
-# Set Cache Directories
+# Set Cache Directories to a Persistent Location
 os.environ['HF_HOME'] = '/workspace/cache/huggingface'
 os.environ['TTS_HOME'] = '/workspace/cache/tts'
 os.environ['INSIGHTFACE_HOME'] = '/workspace/cache/insightface'
@@ -86,23 +86,27 @@ class VoiceCloneService:
     def prepare_voice(self, audio_bytes: bytes):
         logging.info("Analyzing source audio to create voice fingerprint...")
         try:
+            # Save to a temporary file to easily read its properties
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
                 tmpfile.write(audio_bytes)
                 tmp_path = tmpfile.name
             
-            # FIX: Get the sample rate from the audio file info
-            info = sf.info(tmp_path)
-            sample_rate = info.samplerate
+            # **FIX:** Load the audio data and sample rate from the file path
+            audio_data, sample_rate = sf.read(tmp_path)
             
-            # FIX: Pass the sample_rate as the required 'sr' argument
-            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(tmp_path, sample_rate)
+            # **FIX:** Convert the numpy audio data to a PyTorch Tensor
+            audio_tensor = torch.FloatTensor(audio_data).unsqueeze(0)
             
+            # **FIX:** Call the function with the correct arguments (Tensor and sample rate)
+            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(audio_tensor, sample_rate)
+            
+            # Clean up the temporary file
             os.remove(tmp_path)
+            
             logging.info("✅ Voice fingerprint created.")
         except Exception as e:
             logging.error(f"❌ Failed to prepare voice: {e}", exc_info=True)
-            # Re-raise the exception to signal a failure in preparation
-            raise e
+            raise e # Re-raise the exception to signal a failure
 
     def change_voice(self, audio_data: np.ndarray) -> np.ndarray:
         if self.speaker_embedding is None or self.gpt_cond_latent is None: return audio_data
@@ -121,6 +125,7 @@ class VoiceCloneService:
         return np.concatenate(wav_chunks)
 
 class ProcessedVideoStreamTrack(VideoStreamTrack):
+    # ... (no changes here)
     def __init__(self, track, face_swapper):
         super().__init__()
         self.track = track
@@ -136,6 +141,7 @@ class ProcessedVideoStreamTrack(VideoStreamTrack):
         return new_frame
 
 class ProcessedAudioStreamTrack(AudioStreamTrack):
+    # ... (no changes here)
     def __init__(self, track, voice_changer):
         super().__init__()
         self.track = track
@@ -187,6 +193,7 @@ async def on_shutdown():
 
 @app.post("/offer")
 async def offer(request: Request):
+    # ... (no changes here)
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
     pc = RTCPeerConnection()
@@ -211,6 +218,7 @@ async def offer(request: Request):
 
 @app.post("/prepare")
 async def prepare(request: Request):
+    # ... (no changes here)
     body = await request.json()
     face_bytes = base64.b64decode(body["source_face"])
     audio_bytes = base64.b64decode(body["source_audio"])
