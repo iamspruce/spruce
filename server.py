@@ -181,21 +181,35 @@ class VoiceCloneService:
             f.write(audio_bytes)
         self.voice_ref = path
         logger.info("Saved voice_ref at %s", path)
-
+            
     def transcribe_and_synthesize(self, float32_audio: np.ndarray):
+        """
+        Blocking: run STT then TTS. We call this in executor.
+        Input: float32 numpy in -1..1
+        Output: float32 numpy -1..1
+        """
         if self.stt is None or self.tts is None:
             return float32_audio
+        
         tmp_in = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
         try:
             sf_write(tmp_in.name, float32_audio, AUDIO_SAMPLE_RATE)
             tmp_in.close()
+            # STT
             try:
                 res = self.stt(tmp_in.name)
                 text = (res.get("text", "") if isinstance(res, dict) else str(res)).strip()
             except Exception:
-                logger.exception("STT call failed"); text = ""
+                logger.exception("STT call failed")
+                text = ""
+    
+            # ----------- THE FIX IS HERE -----------
+            # If transcription is empty (from silence), don't call TTS.
             if not text:
                 return float32_audio
+            # -----------------------------------------
+    
+            # TTS to file
             tmp_out = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
             tmp_out.close()
             try:
