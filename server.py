@@ -25,7 +25,7 @@ from aiortc import (
     AudioStreamTrack,
 )
 
-from aiortc.rtp import PictureLossIndication
+from aiortc.rtp import Pli
 from av import VideoFrame, AudioFrame
 
 # Optional model libs - ensure installed in your environment
@@ -362,7 +362,7 @@ async def offer(request: Request):
                 video_sender = next((s for s in pc.getSenders() if s.track and s.track.kind == "video"), None)
                 if video_sender:
                     logger.info("Sending PLI to request a keyframe from the client")
-                    pli_packet = PictureLossIndication(media_ssrc=track.ssrc)
+                    pli_packet = Pli(media_ssrc=track.ssrc)
                     try:
                         await video_sender.transport.rtcp.send([pli_packet])
                     except Exception as e:
