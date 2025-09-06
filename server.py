@@ -33,27 +33,17 @@ import insightface.model_zoo
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8001"))
 
-INSIGHTFACE_HOME = os.getenv("INSIGHTFACE_HOME", "/workspace/cache/insightface")
-INSWAPPER_PATH = os.getenv("INSWAPPER_PATH", "/workspace/inswapper_128.onnx")
-
-# --- IMPORTANT: Use environment variables for credentials in production ---
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-
-if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
-    raise ValueError("TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN environment variables must be set")
-
 ICE_SERVERS = [
     RTCIceServer(urls=["stun:stun.l.google.com:19302"]),
     RTCIceServer(
         urls=["turn:global.turn.twilio.com:3478?transport=udp"],
-        username=TWILIO_ACCOUNT_SID,
-        credential=TWILIO_AUTH_TOKEN,
+        username="AC42be81518dbaa82d01a62f7f5adbf2cd",
+        credential="3fbe69c38157120ce43f716729787b0f",
     ),
     RTCIceServer(
         urls=["turn:global.turn.twilio.com:3478?transport=tcp"],
-        username=TWILIO_ACCOUNT_SID,
-        credential=TWILIO_AUTH_TOKEN,
+        username="AC42be81518dbaa82d01a62f7f5adbf2cd",
+        credential="3fbe69c38157120ce43f716729787b0f",
     ),
 ]
 RTC_CONFIG = RTCConfiguration(iceServers=ICE_SERVERS)
