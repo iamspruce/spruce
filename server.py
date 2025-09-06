@@ -49,26 +49,16 @@ WHISPER_MODEL_ID = os.getenv("WHISPER_MODEL_ID", "openai/whisper-tiny.en")
 TTS_MODEL_ID = os.getenv("TTS_MODEL_ID", "tts_models/en/ljspeech/tacotron2-DDC")
 
 ICE_SERVERS = [
-    RTCIceServer(urls=["stun:stun.relay.metered.ca:80"]),
+    RTCIceServer(urls=["stun:stun.l.google.com:19302"]),
     RTCIceServer(
-        urls=["turn:standard.relay.metered.ca:80"],
-        username="41ad7e7918de3b702209a770",
-        credential="YwsMLFcI2htVX4Po",
+        urls=["turn:global.turn.twilio.com:3478?transport=udp"],
+        username="AC42be81518dbaa82d01a62f7f5adbf2cd",
+        credential="3fbe69c38157120ce43f716729787b0f",
     ),
     RTCIceServer(
-        urls=["turn:standard.relay.metered.ca:80?transport=tcp"],
-        username="41ad7e7918de3b702209a770",
-        credential="YwsMLFcI2htVX4Po",
-    ),
-    RTCIceServer(
-        urls=["turn:standard.relay.metered.ca:443"],
-        username="41ad7e7918de3b702209a770",
-        credential="YwsMLFcI2htVX4Po",
-    ),
-    RTCIceServer(
-        urls=["turns:standard.relay.metered.ca:443?transport=tcp"],
-        username="41ad7e7918de3b702209a770",
-        credential="YwsMLFcI2htVX4Po",
+        urls=["turn:global.turn.twilio.com:3478?transport=tcp"],
+        username="AC42be81518dbaa82d01a62f7f5adbf2cd",
+        credential="3fbe69c38157120ce43f716729787b0f",
     ),
 ]
 RTC_CONFIG = RTCConfiguration(iceServers=ICE_SERVERS)
