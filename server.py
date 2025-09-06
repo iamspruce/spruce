@@ -22,6 +22,8 @@ import numpy as np
 import torch
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio
+from aiortc.rtcp import PictureLossIndication
 from aiortc import (
     RTCPeerConnection,
     RTCSessionDescription,
@@ -397,19 +399,34 @@ async def offer(request: Request):
     def on_track(track):
         logger.info("Track received: %s", track.kind)
         if track.kind == "video":
-            pc.addTrack(ProcessedVideoStreamTrack(track, face_service))
-        elif track.kind == "audio":
-            pc.addTrack(ProcessedAudioStreamTrack(track, voice_service))
+            processed_track = ProcessedVideoStreamTrack(track, face_service)
+            pc.addTrack(processed_track)
+    
+            # ----------- KEYFRAME FIX: ADD THIS CODE -----------
+            # This function runs in the background to request a keyframe from the client.
+            async def force_keyframe():
+                # Wait a moment for the connection to become stable.
+                await asyncio.sleep(0.5)
+    
+                # Find the video sender to send the PLI packet.
+                video_sender = next(
+                    (s for s in pc.getSenders() if s.track and s.track.kind == "video"), None
+                )
+                if video_sender:
+                    logger.info("Sending PLI to request a keyframe from the client")
+                    pli_packet = PictureLossIndication(media_ssrc=track.ssrc)
+                    try:
+                        # Send the request.
+                        await video_sender.transport.rtcp.send([pli_packet])
+                    except Exception as e:
+                        logger.error(f"Failed to send PLI request: {e}")
+    
+            # Run the keyframe request task in the background.
+            asyncio.ensure_future(force_keyframe())
+            # ---------------------------------------------------
 
-    @pc.on("connectionstatechange")
-    async def on_connectionstatechange():
-        logger.info("Connection state %s -> %s", id(pc), pc.connectionState)
-        if pc.connectionState in ("failed", "closed", "disconnected"):
-            try:
-                await pc.close()
-            except Exception:
-                pass
-            pcs.discard(pc)
+    elif track.kind == "audio":
+        pc.addTrack(ProcessedAudioStreamTrack(track, voice_service))
 
     # set remote & create answer
     await pc.setRemoteDescription(offer)
