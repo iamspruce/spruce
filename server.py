@@ -22,8 +22,7 @@ from aiortc import (
     RTCIceServer,
     VideoStreamTrack,
 )
-# The manual import is no longer needed with your method
-# from aiortc.rtp import PictureLossIndication 
+
 from av import VideoFrame
 
 # AI model imports for face swapping
