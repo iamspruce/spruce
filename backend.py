@@ -18,7 +18,7 @@ import numpy as np
 import torch
 import soundfile as sf
 from fastapi import FastAPI, Request, Body
-from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack, AudioStreamTrack
+from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack, AudioStreamTrack, RTCConfiguration, RTCIceServer
 from av import VideoFrame, AudioFrame
 from fastapi.middleware.cors import CORSMiddleware
 
