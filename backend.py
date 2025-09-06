@@ -20,19 +20,15 @@ import soundfile as sf
 from fastapi import FastAPI, Request, Body
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack, AudioStreamTrack
 from av import VideoFrame, AudioFrame
-# FIX: Import the CORS middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 # --- Logging and Config ---
-# ... (no changes here)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 TORCH_DTYPE = torch.float16 if torch.cuda.is_available() else torch.float32
 
-
-# --- (All the service classes like RunPodManager, FaceSwapService, VoiceCloneService are unchanged) ---
+# --- (All other classes like RunPodManager, FaceSwapService, etc., are unchanged) ---
 class RunPodManager:
-    # ... (no changes in this class)
     def __init__(self):
         self.api_key = os.getenv("RUNPOD_API_KEY")
         self.pod_id = os.getenv("RUNPOD_POD_ID")
@@ -51,7 +47,6 @@ class RunPodManager:
             logging.error(f"❌ Failed to send stop command: {e}")
 
 class FaceSwapService:
-    # ... (no changes in this class)
     def __init__(self):
         logging.info("Loading Face Analysis models...")
         from insightface.app import FaceAnalysis
@@ -78,7 +73,6 @@ class FaceSwapService:
         return frame_np
 
 class VoiceCloneService:
-    # ... (no changes in this class)
     def __init__(self):
         logging.info("Loading STT and TTS models...")
         from transformers import pipeline
@@ -91,12 +85,24 @@ class VoiceCloneService:
 
     def prepare_voice(self, audio_bytes: bytes):
         logging.info("Analyzing source audio to create voice fingerprint...")
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
-            tmpfile.write(audio_bytes)
-            tmp_path = tmpfile.name
-        self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(tmp_path)
-        os.remove(tmp_path)
-        logging.info("✅ Voice fingerprint created.")
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
+                tmpfile.write(audio_bytes)
+                tmp_path = tmpfile.name
+            
+            # FIX: Get the sample rate from the audio file info
+            info = sf.info(tmp_path)
+            sample_rate = info.samplerate
+            
+            # FIX: Pass the sample_rate as the required 'sr' argument
+            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(tmp_path, sample_rate)
+            
+            os.remove(tmp_path)
+            logging.info("✅ Voice fingerprint created.")
+        except Exception as e:
+            logging.error(f"❌ Failed to prepare voice: {e}", exc_info=True)
+            # Re-raise the exception to signal a failure in preparation
+            raise e
 
     def change_voice(self, audio_data: np.ndarray) -> np.ndarray:
         if self.speaker_embedding is None or self.gpt_cond_latent is None: return audio_data
@@ -115,7 +121,6 @@ class VoiceCloneService:
         return np.concatenate(wav_chunks)
 
 class ProcessedVideoStreamTrack(VideoStreamTrack):
-    # ... (no changes in this class)
     def __init__(self, track, face_swapper):
         super().__init__()
         self.track = track
@@ -131,13 +136,12 @@ class ProcessedVideoStreamTrack(VideoStreamTrack):
         return new_frame
 
 class ProcessedAudioStreamTrack(AudioStreamTrack):
-    # ... (no changes in this class)
     def __init__(self, track, voice_changer):
         super().__init__()
         self.track = track
         self.voice_changer = voice_changer
         self.buffer = np.array([], dtype=np.int16)
-        self.sample_rate = 16000 # Whisper's required sample rate
+        self.sample_rate = 16000
 
     async def recv(self):
         frame = await self.track.recv()
@@ -156,28 +160,25 @@ class ProcessedAudioStreamTrack(AudioStreamTrack):
             
             new_frame = AudioFrame(format='s16', layout='mono', samples=len(converted_chunk))
             new_frame.planes[0].update(converted_chunk.tobytes())
-            new_frame.sample_rate = 24000 # XTTS output sample rate
+            new_frame.sample_rate = 24000
             return new_frame
         
         return await self.track.recv()
 
 # --- FastAPI Application ---
 app = FastAPI()
-
-# FIX: Add CORS middleware to allow cross-origin requests from the frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 face_swapper = FaceSwapService()
 voice_changer = VoiceCloneService()
 pcs = set()
 
-# --- (The rest of the endpoints like /offer and /prepare are unchanged) ---
 @app.on_event("shutdown")
 async def on_shutdown():
     coros = [pc.close() for pc in pcs]
@@ -218,5 +219,9 @@ async def prepare(request: Request):
     if not face_success:
         return {"status": "error", "message": "No face found in source image."}
         
-    voice_changer.prepare_voice(audio_bytes)
-    return {"status": "success"}
+    try:
+        voice_changer.prepare_voice(audio_bytes)
+        return {"status": "success"}
+    except Exception as e:
+        logging.error(f"Voice preparation failed: {e}")
+        return {"status": "error", "message": f"Failed to prepare voice: {e}"}
