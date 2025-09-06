@@ -81,9 +81,9 @@ class FaceSwapService:
 
         try:
             if os.path.exists(INSWAPPER_PATH):
-                self.inswapper = insightface.model_zoo.get_model(INSWAPPER_PATH, download=False, root=INSIGHTFACE_HOME)
+                self.inswapper = insightface.model_zoo.get_model(INSWAPPER_PATH, download=True, root=INSIGHTFACE_HOME)
             else:
-                self.inswapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, root=INSIGHTFACE_HOME)
+                self.inswapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=True, root=INSIGHTFACE_HOME)
             logger.info("Inswapper ready")
         except Exception:
             logger.exception("Inswapper load failed; falling back to naive paste")
