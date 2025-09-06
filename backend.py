@@ -8,6 +8,11 @@ import json
 import uuid
 import tempfile
 
+# Set Cache Directories
+os.environ['HF_HOME'] = '/workspace/cache/huggingface'
+os.environ['TTS_HOME'] = '/workspace/cache/tts'
+os.environ['INSIGHTFACE_HOME'] = '/workspace/cache/insightface'
+
 import cv2
 import numpy as np
 import torch
@@ -15,19 +20,38 @@ import soundfile as sf
 from fastapi import FastAPI, Request, Body
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack, AudioStreamTrack
 from av import VideoFrame, AudioFrame
-
-# Set Cache Directories
-os.environ['HF_HOME'] = '/workspace/cache/huggingface'
-os.environ['TTS_HOME'] = '/workspace/cache/tts'
-os.environ['INSIGHTFACE_HOME'] = '/workspace/cache/insightface'
+# FIX: Import the CORS middleware
+from fastapi.middleware.cors import CORSMiddleware
 
 # --- Logging and Config ---
+# ... (no changes here)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 TORCH_DTYPE = torch.float16 if torch.cuda.is_available() else torch.float32
 
-# --- FaceSwapService Class ---
+
+# --- (All the service classes like RunPodManager, FaceSwapService, VoiceCloneService are unchanged) ---
+class RunPodManager:
+    # ... (no changes in this class)
+    def __init__(self):
+        self.api_key = os.getenv("RUNPOD_API_KEY")
+        self.pod_id = os.getenv("RUNPOD_POD_ID")
+        if not self.api_key or not self.pod_id:
+            logging.warning("⚠️ RUNPOD_API_KEY or RUNPOD_POD_ID not set. Auto-shutdown is disabled.")
+
+    def stop_pod(self):
+        if not self.api_key or not self.pod_id: return
+        logging.info(f"🛑 Stopping RunPod instance {self.pod_id}...")
+        url = f"https://api.runpod.io/graphql?api_key={self.api_key}"
+        query = f"""mutation {{ podStop(input: {{ podId: "{self.pod_id}" }}) {{ id desiredStatus }} }}"""
+        try:
+            requests.post(url, json={'query': query})
+            logging.info("✅ Stop command sent to RunPod API.")
+        except Exception as e:
+            logging.error(f"❌ Failed to send stop command: {e}")
+
 class FaceSwapService:
+    # ... (no changes in this class)
     def __init__(self):
         logging.info("Loading Face Analysis models...")
         from insightface.app import FaceAnalysis
@@ -53,8 +77,8 @@ class FaceSwapService:
             frame_np = self.face_swapper.get(frame_np, target_faces[0], self.source_face, paste_back=True)
         return frame_np
 
-# --- VoiceCloneService Class ---
 class VoiceCloneService:
+    # ... (no changes in this class)
     def __init__(self):
         logging.info("Loading STT and TTS models...")
         from transformers import pipeline
@@ -90,8 +114,8 @@ class VoiceCloneService:
         
         return np.concatenate(wav_chunks)
 
-# --- WebRTC Media Tracks ---
 class ProcessedVideoStreamTrack(VideoStreamTrack):
+    # ... (no changes in this class)
     def __init__(self, track, face_swapper):
         super().__init__()
         self.track = track
@@ -107,6 +131,7 @@ class ProcessedVideoStreamTrack(VideoStreamTrack):
         return new_frame
 
 class ProcessedAudioStreamTrack(AudioStreamTrack):
+    # ... (no changes in this class)
     def __init__(self, track, voice_changer):
         super().__init__()
         self.track = track
@@ -134,16 +159,25 @@ class ProcessedAudioStreamTrack(AudioStreamTrack):
             new_frame.sample_rate = 24000 # XTTS output sample rate
             return new_frame
         
-        # To avoid dead air, we could pass through audio, but for simplicity we wait for a full chunk
-        # This is a source of latency. A more complex implementation would stream this better.
-        return await self.track.recv() # Pass-through for now
+        return await self.track.recv()
 
 # --- FastAPI Application ---
 app = FastAPI()
+
+# FIX: Add CORS middleware to allow cross-origin requests from the frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 face_swapper = FaceSwapService()
 voice_changer = VoiceCloneService()
 pcs = set()
 
+# --- (The rest of the endpoints like /offer and /prepare are unchanged) ---
 @app.on_event("shutdown")
 async def on_shutdown():
     coros = [pc.close() for pc in pcs]
