@@ -48,7 +48,29 @@ INSWAPPER_PATH = os.getenv("INSWAPPER_PATH", "/workspace/inswapper_128.onnx")
 WHISPER_MODEL_ID = os.getenv("WHISPER_MODEL_ID", "openai/whisper-tiny.en")
 TTS_MODEL_ID = os.getenv("TTS_MODEL_ID", "tts_models/en/ljspeech/tacotron2-DDC")
 
-ICE_SERVERS = [RTCIceServer(urls=["stun:stun.l.google.com:19302"])]
+ICE_SERVERS = [
+    RTCIceServer(urls=["stun:stun.relay.metered.ca:80"]),
+    RTCIceServer(
+        urls=["turn:standard.relay.metered.ca:80"],
+        username="41ad7e7918de3b702209a770",
+        credential="YwsMLFcI2htVX4Po",
+    ),
+    RTCIceServer(
+        urls=["turn:standard.relay.metered.ca:80?transport=tcp"],
+        username="41ad7e7918de3b702209a770",
+        credential="YwsMLFcI2htVX4Po",
+    ),
+    RTCIceServer(
+        urls=["turn:standard.relay.metered.ca:443"],
+        username="41ad7e7918de3b702209a770",
+        credential="YwsMLFcI2htVX4Po",
+    ),
+    RTCIceServer(
+        urls=["turns:standard.relay.metered.ca:443?transport=tcp"],
+        username="41ad7e7918de3b702209a770",
+        credential="YwsMLFcI2htVX4Po",
+    ),
+]
 RTC_CONFIG = RTCConfiguration(iceServers=ICE_SERVERS)
 
 AUDIO_SAMPLE_RATE = int(os.getenv("AUDIO_SAMPLE_RATE", "16000"))
