@@ -33,6 +33,9 @@ import insightface.model_zoo
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8001"))
 
+INSIGHTFACE_HOME = os.getenv("INSIGHTFACE_HOME", "/workspace/cache/insightface")
+INSWAPPER_PATH = os.getenv("INSWAPPER_PATH", "/workspace/inswapper_128.onnx")
+
 ICE_SERVERS = [
     RTCIceServer(urls=["stun:stun.l.google.com:19302"]),
     RTCIceServer(
@@ -64,11 +67,12 @@ pcs = set()  # keep alive peer connections
 
 # ---------- Model wrappers ----------
 class FaceSwapService:
-    def __init__(self):
+    # STEP 1: Accept config as arguments in the constructor
+    def __init__(self, insightface_home: str, inswapper_path: str):
         logger.info("Loading insightface FaceAnalysis...")
         try:
             ctx_id = 0 if torch.cuda.is_available() else -1
-            self.analyzer = FaceAnalysis(name="buffalo_s", root=INSIGHTFACE_HOME)
+            self.analyzer = FaceAnalysis(name="buffalo_s", root=insightface_home) # Use argument
             self.analyzer.prepare(ctx_id=ctx_id, det_size=(640, 640))
             logger.info(f"FaceAnalysis ready (ctx={ctx_id})")
         except Exception:
@@ -76,7 +80,7 @@ class FaceSwapService:
             self.analyzer = None
 
         try:
-            self.inswapper = insightface.model_zoo.get_model(INSWAPPER_PATH, download=False, root=INSIGHTFACE_HOME)
+            self.inswapper = insightface.model_zoo.get_model(inswapper_path, download=False, root=insightface_home) # Use arguments
             logger.info("Inswapper ready")
         except Exception:
             logger.exception("Inswapper load failed")
@@ -148,7 +152,12 @@ class ProcessedVideoStreamTrack(VideoStreamTrack):
         return new_frame
 
 # ---------- App endpoints ----------
-face_service = FaceSwapService()
+# STEP 2: Pass the config variables when creating the service
+face_service = FaceSwapService(
+    insightface_home=INSIGHTFACE_HOME,
+    inswapper_path=INSWAPPER_PATH
+)
+
 
 @app.post("/prepare")
 async def prepare(req: Request):
@@ -185,7 +194,6 @@ async def offer(request: Request):
                 if video_sender:
                     logger.info("Sending PLI to request a keyframe")
                     try:
-                        # FIXED: Using your simpler and more robust keyframe request method
                         await video_sender.send_rtcp_pli()
                     except Exception as e:
                         logger.error(f"Failed to send PLI request: {e}")
@@ -214,5 +222,5 @@ async def on_shutdown():
 
 if __name__ == "__main__":
     import uvicorn
-    # Make sure this matches your filename. If your file is named 'backend.py', use "backend:app".
-    uvicorn.run("servver:app", host=HOST, port=PORT, log_level="info")
+    # Make sure this matches your filename. If the file is 'backend.py', use "backend:app".
+    uvicorn.run("backend:app", host="0.0.0.0", port=8001, log_level="info")
