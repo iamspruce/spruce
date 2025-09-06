@@ -95,13 +95,32 @@ async def prepare(req:Request):
     vc.prepare(audio); return {"status":"success"}
 
 @app.post("/offer")
-async def offer(req:Request):
-    body=await req.json(); offer=RTCSessionDescription(sdp=body["sdp"],type=body["type"])
-    pc=RTCPeerConnection(config); pcs.add(pc)
+async def offer(request: Request):
+    params = await request.json()
+    offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
+
+    pc = RTCPeerConnection()
+    pcs.add(pc)
+
     @pc.on("track")
     def on_track(track):
-        if track.kind=="video": pc.addTrack(ProcessedVideoStreamTrack(track,swapper))
-        elif track.kind=="audio": pc.addTrack(ProcessedAudioStreamTrack(track,vc))
+        logger.info("Track received: %s", track.kind)
+        if track.kind == "video":
+            pc.addTrack(ProcessedVideoStreamTrack(track))
+        elif track.kind == "audio":
+            pc.addTrack(ProcessedAudioStreamTrack(track))
+
     await pc.setRemoteDescription(offer)
-    ans=await pc.createAnswer(); await pc.setLocalDescription(ans)
-    return {"sdp":pc.localDescription.sdp,"type":pc.localDescription.type}
+    answer = await pc.createAnswer()
+    await pc.setLocalDescription(answer)
+
+    # Wait until ICE gathering is complete
+    async def wait_for_ice():
+        while pc.iceGatheringState != "complete":
+            await asyncio.sleep(0.1)
+    await wait_for_ice()
+
+    return {
+        "sdp": pc.localDescription.sdp,
+        "type": pc.localDescription.type,
+    }
