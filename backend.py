@@ -177,6 +177,11 @@ face_swapper = FaceSwapService()
 voice_changer = VoiceCloneService()
 pcs = set()
 
+ice_servers = [
+    RTCIceServer(urls=["stun:stun.l.google.com:19302"])
+]
+config = RTCConfiguration(iceServers=ice_servers)
+
 @app.on_event("shutdown")
 async def on_shutdown():
     # ... (no changes here)
@@ -189,7 +194,7 @@ async def offer(request: Request):
     # ... (no changes here)
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
-    pc = RTCPeerConnection()
+    pc = RTCPeerConnection(config=config)
     pcs.add(pc)
 
     @pc.on("track")
