@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Production-ready WebRTC avatar backend (FastAPI + aiortc).
+Production-ready WebRTC avatar backend (FastAPI + aiortc). 
 """
 
 import os
