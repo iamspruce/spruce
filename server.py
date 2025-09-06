@@ -24,7 +24,7 @@ from aiortc import (
     VideoStreamTrack,
     AudioStreamTrack,
 )
-from aiortc.rtcp import PictureLossIndication
+from aiortc.rtp import PictureLossIndication
 from av import VideoFrame, AudioFrame
 
 # Optional model libs - ensure installed in your environment
