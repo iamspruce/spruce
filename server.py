@@ -369,7 +369,7 @@ async def offer(request: Request):
             
             asyncio.ensure_future(force_keyframe())
         
-        # FIXED: Correct indentation for the audio track handler.
+        
         elif track.kind == "audio":
             pc.addTrack(ProcessedAudioStreamTrack(track, voice_service))
 
