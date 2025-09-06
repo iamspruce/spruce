@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Production-ready WebRTC avatar backend (FastAPI + aiortc). 
-(Video + FaceSwap only, no voice models or audio processing)
+(Video + FaceSwap only, no voice models)
 """
 
 import os
@@ -25,16 +25,19 @@ from aiortc import (
 )
 from av import VideoFrame
 
-# Optional model libs - ensure installed in your environment
 from insightface.app import FaceAnalysis
 import insightface.model_zoo
+
+# ---------- Ensure cache path matches setup ----------
+CACHE_HOME = "/workspace/cache"
+os.environ["INSIGHTFACE_HOME"] = os.path.join(CACHE_HOME, "insightface")
+INSIGHTFACE_HOME = os.environ["INSIGHTFACE_HOME"]
+INSWAPPER_PATH = "inswapper_128.onnx"
+INSWAPPER_FULLPATH = os.path.join(INSIGHTFACE_HOME, "models", INSWAPPER_PATH)
 
 # ---------- Config ----------
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8001"))
-
-INSIGHTFACE_HOME = os.getenv("INSIGHTFACE_HOME", "/workspace/cache/insightface")
-INSWAPPER_PATH = os.getenv("INSWAPPER_PATH", "/workspace/inswapper_128.onnx")
 
 ICE_SERVERS = [
     RTCIceServer(urls=["stun:stun.l.google.com:19302"]),
@@ -79,14 +82,22 @@ class FaceSwapService:
             logger.exception("Failed to initialize FaceAnalysis; face detection will be limited.")
             self.analyzer = None
 
+        # ---------- Load or download inswapper ----------
         try:
-            if os.path.exists(INSWAPPER_PATH):
-                self.inswapper = insightface.model_zoo.get_model(INSWAPPER_PATH, download=True, root=INSIGHTFACE_HOME)
+            os.makedirs(os.path.join(INSIGHTFACE_HOME, "models"), exist_ok=True)
+            if os.path.exists(INSWAPPER_FULLPATH):
+                logger.info(f"Inswapper model found at {INSWAPPER_FULLPATH}, loading locally")
+                self.inswapper = insightface.model_zoo.get_model(INSWAPPER_FULLPATH, download=False)
             else:
-                self.inswapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=True, root=INSIGHTFACE_HOME)
+                logger.info(f"Inswapper not found, downloading to {INSIGHTFACE_HOME}/models")
+                self.inswapper = insightface.model_zoo.get_model(
+                    INSWAPPER_PATH,
+                    download=True,
+                    root=INSIGHTFACE_HOME
+                )
             logger.info("Inswapper ready")
         except Exception:
-            logger.exception("Inswapper load failed; falling back to naive paste")
+            logger.exception("Inswapper load failed; face swapping may be limited")
             self.inswapper = None
 
         self.source_face = None
@@ -257,6 +268,9 @@ async def on_shutdown():
         await asyncio.gather(*coros)
     pcs.clear()
 
+# ---------- Instantiate PeerConnection set ----------
+pcs = set()
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("servver:app", host=HOST, port=PORT, log_level="info")
+    uvicorn.run("server:app", host=HOST, port=PORT, log_level="info")
