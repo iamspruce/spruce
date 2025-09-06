@@ -3,7 +3,7 @@
 Production-ready WebRTC avatar backend (FastAPI + aiortc).
 (Video + FaceSwap only, no voice models)
 
-Optimized for low latency and responsiveness.
+fixed for low latency and responsiveness.
 """
 
 import os
