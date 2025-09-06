@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 TORCH_DTYPE = torch.float16 if torch.cuda.is_available() else torch.float32
 
-# --- (All other classes like RunPodManager, FaceSwapService, etc., are unchanged) ---
+# --- (All other classes like RunPodManager, FaceSwapService are unchanged) ---
 class RunPodManager:
     def __init__(self):
         self.api_key = os.getenv("RUNPOD_API_KEY")
@@ -72,6 +72,7 @@ class FaceSwapService:
             frame_np = self.face_swapper.get(frame_np, target_faces[0], self.source_face, paste_back=True)
         return frame_np
 
+# --- VoiceCloneService (Refactored for Simplicity and Correctness) ---
 class VoiceCloneService:
     def __init__(self):
         logging.info("Loading STT and TTS models...")
@@ -79,46 +80,37 @@ class VoiceCloneService:
         from TTS.api import TTS
         self.stt_pipe = pipeline("automatic-speech-recognition", model="distil-whisper/distil-medium.en", torch_dtype=TORCH_DTYPE, device=DEVICE)
         self.tts_pipe = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=torch.cuda.is_available())
-        self.speaker_embedding = None
-        self.gpt_cond_latent = None
+        # FIX: We only need to store the path to the source audio file
+        self.source_wav_path = None
         logging.info("✅ Voice models loaded.")
 
     def prepare_voice(self, audio_bytes: bytes):
-        logging.info("Analyzing source audio to create voice fingerprint...")
+        logging.info("Saving source audio file...")
         try:
-            # Save to a temporary file to easily read its properties
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
-                tmpfile.write(audio_bytes)
-                tmp_path = tmpfile.name
-            
-            # **FIX:** Load the audio data and sample rate from the file path
-            audio_data, sample_rate = sf.read(tmp_path)
-            
-            # **FIX:** Convert the numpy audio data to a PyTorch Tensor
-            audio_tensor = torch.FloatTensor(audio_data).unsqueeze(0)
-            
-            # **FIX:** Call the function with the correct arguments (Tensor and sample rate)
-            self.gpt_cond_latent, self.speaker_embedding = self.tts_pipe.synthesizer.tts_model.get_speaker_embedding(audio_tensor, sample_rate)
-            
-            # Clean up the temporary file
-            os.remove(tmp_path)
-            
-            logging.info("✅ Voice fingerprint created.")
+            # FIX: Instead of complex fingerprinting, we just save the audio to a known, persistent location.
+            # We use a fixed name to ensure it's easily accessible.
+            self.source_wav_path = os.path.join("/workspace", "source_voice.wav")
+            with open(self.source_wav_path, "wb") as f:
+                f.write(audio_bytes)
+            logging.info(f"✅ Source voice saved to {self.source_wav_path}.")
         except Exception as e:
             logging.error(f"❌ Failed to prepare voice: {e}", exc_info=True)
-            raise e # Re-raise the exception to signal a failure
+            raise e
 
     def change_voice(self, audio_data: np.ndarray) -> np.ndarray:
-        if self.speaker_embedding is None or self.gpt_cond_latent is None: return audio_data
+        if not self.source_wav_path:
+            return audio_data
         
         transcription = self.stt_pipe(audio_data)["text"]
-        if not transcription.strip(): return np.array([], dtype=np.int16)
+        if not transcription.strip():
+            return np.array([], dtype=np.int16)
 
         wav_chunks = []
+        # FIX: The API call is now much simpler, using the speaker_wav argument.
+        # This is the modern, correct way to use the library for zero-shot cloning.
         for chunk in self.tts_pipe.tts_stream(
             text=transcription, language="en",
-            speaker_embedding=self.speaker_embedding,
-            gpt_cond_latent=self.gpt_cond_latent,
+            speaker_wav=self.source_wav_path,
         ):
             wav_chunks.append(chunk.cpu().numpy())
         
@@ -187,6 +179,7 @@ pcs = set()
 
 @app.on_event("shutdown")
 async def on_shutdown():
+    # ... (no changes here)
     coros = [pc.close() for pc in pcs]
     await asyncio.gather(*coros)
     pcs.clear()
