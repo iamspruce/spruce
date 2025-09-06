@@ -194,7 +194,7 @@ async def offer(request: Request):
     # ... (no changes here)
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
-    pc = RTCPeerConnection(config=config)
+    pc = RTCPeerConnection(configuration=config)
     pcs.add(pc)
 
     @pc.on("track")
