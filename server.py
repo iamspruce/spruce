@@ -22,7 +22,8 @@ from aiortc import (
     RTCIceServer,
     VideoStreamTrack,
 )
-from aiortc.rtp import PictureLossIndication
+# The manual import is no longer needed with your method
+# from aiortc.rtp import PictureLossIndication 
 from av import VideoFrame
 
 # AI model imports for face swapping
@@ -77,8 +78,6 @@ class FaceSwapService:
     def __init__(self):
         logger.info("Loading insightface FaceAnalysis...")
         try:
-            # Forcing to CPU to save VRAM if needed, otherwise use GPU
-            # ctx_id = -1 # Force CPU
             ctx_id = 0 if torch.cuda.is_available() else -1
             self.analyzer = FaceAnalysis(name="buffalo_s", root=INSIGHTFACE_HOME)
             self.analyzer.prepare(ctx_id=ctx_id, det_size=(640, 640))
@@ -91,7 +90,7 @@ class FaceSwapService:
             self.inswapper = insightface.model_zoo.get_model(INSWAPPER_PATH, download=False, root=INSIGHTFACE_HOME)
             logger.info("Inswapper ready")
         except Exception:
-            logger.exception("Inswapper load failed; falling back to naive paste")
+            logger.exception("Inswapper load failed")
             self.inswapper = None
 
         self.source_face = None
@@ -197,7 +196,8 @@ async def offer(request: Request):
                 if video_sender:
                     logger.info("Sending PLI to request a keyframe")
                     try:
-                        await video_sender.transport.rtcp.send([PictureLossIndication(media_ssrc=track.ssrc)])
+                        # FIXED: Using your simpler and more robust keyframe request method
+                        await video_sender.send_rtcp_pli()
                     except Exception as e:
                         logger.error(f"Failed to send PLI request: {e}")
             
