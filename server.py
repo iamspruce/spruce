@@ -25,7 +25,6 @@ from aiortc import (
     AudioStreamTrack,
 )
 
-from aiortc.rtp import PictureLossIndication
 from av import VideoFrame, AudioFrame
 
 # Optional model libs - ensure installed in your environment
@@ -361,10 +360,9 @@ async def offer(request: Request):
                 await asyncio.sleep(0.5)
                 video_sender = next((s for s in pc.getSenders() if s.track and s.track.kind == "video"), None)
                 if video_sender:
-                    logger.info("Sending PLI to request a keyframe from the client")
-                    pli_packet = PictureLossIndication(media_ssrc=track.ssrc)
                     try:
-                        await video_sender.transport.rtcp.send([pli_packet])
+                        await video_sender.send_rtcp_pli()
+                        logger.info("PLI sent to request a keyframe from the client")
                     except Exception as e:
                         logger.error(f"Failed to send PLI request: {e}")
             
