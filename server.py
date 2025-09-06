@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-A streamlined, production-ready WebRTC backend for real-time face swapping.
+Production-ready WebRTC avatar backend (FastAPI + aiortc). 
+(Video + FaceSwap only, no voice models or audio processing)
 """
 
 import os
+import sys
 import asyncio
 import base64
 import logging
-import tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 import cv2
@@ -22,10 +23,9 @@ from aiortc import (
     RTCIceServer,
     VideoStreamTrack,
 )
-
 from av import VideoFrame
 
-# AI model imports for face swapping
+# Optional model libs - ensure installed in your environment
 from insightface.app import FaceAnalysis
 import insightface.model_zoo
 
@@ -50,6 +50,7 @@ ICE_SERVERS = [
     ),
 ]
 RTC_CONFIG = RTCConfiguration(iceServers=ICE_SERVERS)
+
 FRAME_SKIP = int(os.getenv("FRAME_SKIP", "5"))
 
 # ---------- Logging ----------
@@ -67,45 +68,64 @@ pcs = set()  # keep alive peer connections
 
 # ---------- Model wrappers ----------
 class FaceSwapService:
-    # STEP 1: Accept config as arguments in the constructor
-    def __init__(self, insightface_home: str, inswapper_path: str):
+    def __init__(self):
         logger.info("Loading insightface FaceAnalysis...")
         try:
             ctx_id = 0 if torch.cuda.is_available() else -1
-            self.analyzer = FaceAnalysis(name="buffalo_s", root=insightface_home) # Use argument
+            self.analyzer = FaceAnalysis(name="buffalo_s", root=INSIGHTFACE_HOME)
             self.analyzer.prepare(ctx_id=ctx_id, det_size=(640, 640))
-            logger.info(f"FaceAnalysis ready (ctx={ctx_id})")
+            logger.info("FaceAnalysis ready (ctx=%s)", ctx_id)
         except Exception:
-            logger.exception("Failed to initialize FaceAnalysis.")
+            logger.exception("Failed to initialize FaceAnalysis; face detection will be limited.")
             self.analyzer = None
 
         try:
-            self.inswapper = insightface.model_zoo.get_model(inswapper_path, download=False, root=insightface_home) # Use arguments
+            if os.path.exists(INSWAPPER_PATH):
+                self.inswapper = insightface.model_zoo.get_model(INSWAPPER_PATH, download=False, root=INSIGHTFACE_HOME)
+            else:
+                self.inswapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, root=INSIGHTFACE_HOME)
             logger.info("Inswapper ready")
         except Exception:
-            logger.exception("Inswapper load failed")
+            logger.exception("Inswapper load failed; falling back to naive paste")
             self.inswapper = None
 
         self.source_face = None
+        self.source_face_img = None
 
     def set_source_face(self, image_bytes: bytes) -> bool:
         arr = np.frombuffer(image_bytes, dtype=np.uint8)
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-        if img is None or not self.analyzer:
+        if img is None:
             return False
-        try:
-            faces = self.analyzer.get(img)
-            if faces:
-                self.source_face = sorted(faces, key=lambda x: (x.bbox[2] - x.bbox[0]) * (x.bbox[3] - x.bbox[1]))[-1]
-                logger.info("Source face saved (insightface descriptor)")
-                return True
-        except Exception:
-            logger.exception("Analyzer failed on source image")
-        return False
+        if self.analyzer:
+            try:
+                faces = self.analyzer.get(img)
+                if faces:
+                    self.source_face = sorted(faces, key=lambda x: (x.bbox[2] - x.bbox[0]) * (x.bbox[3] - x.bbox[1]))[-1]
+                    logger.info("Source face saved (insightface descriptor)")
+                    return True
+            except Exception:
+                logger.exception("Analyzer failed on source img - will store fallback crop")
+        h, w = img.shape[:2]
+        s = min(h, w)
+        cy, cx = h // 2, w // 2
+        y1, x1 = max(0, cy - s // 2), max(0, cx - s // 2)
+        self.source_face_img = img[y1:y1 + s, x1:x1 + s].copy()
+        logger.info("Source face saved as fallback center-crop")
+        return True
 
     def detect(self, frame_bgr: np.ndarray):
         if not self.analyzer:
-            return []
+            gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
+            if not hasattr(self, "_cascade"):
+                self._cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+            faces = self._cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(60, 60))
+            dets = []
+            for (x, y, w, h) in faces:
+                class D: pass
+                d = D(); d.bbox = (x, y, x + w, y + h)
+                dets.append(d)
+            return dets
         try:
             return self.analyzer.get(frame_bgr)
         except Exception:
@@ -113,11 +133,20 @@ class FaceSwapService:
             return []
 
     def swap(self, frame_bgr: np.ndarray, dets):
-        if self.inswapper and self.source_face and dets:
-            try:
+        try:
+            if self.inswapper and self.source_face and dets:
                 return self.inswapper.get(frame_bgr, dets[0], self.source_face, paste_back=True)
+        except Exception:
+            logger.exception("Inswapper error, falling back")
+        if self.source_face_img is not None and dets:
+            try:
+                d = dets[0]
+                x1, y1, x2, y2 = map(int, d.bbox)
+                w, h = x2 - x1, y2 - y1
+                src = cv2.resize(self.source_face_img, (w, h))
+                frame_bgr[y1:y2, x1:x2] = src
             except Exception:
-                logger.exception("Inswapper error")
+                logger.exception("Fallback paste failed")
         return frame_bgr
 
 # ---------- Tracks ----------
@@ -133,7 +162,6 @@ class ProcessedVideoStreamTrack(VideoStreamTrack):
         frame = await self.track.recv()
         img = frame.to_ndarray(format="bgr24")
         self.frame_index += 1
-
         if (self.frame_index % FRAME_SKIP) == 0:
             loop = asyncio.get_running_loop()
             try:
@@ -142,22 +170,15 @@ class ProcessedVideoStreamTrack(VideoStreamTrack):
             except Exception:
                 logger.exception("Detection executor failed")
                 self.cached_dets = []
-
         loop = asyncio.get_running_loop()
         processed = await loop.run_in_executor(executor, self.face_service.swap, img.copy(), self.cached_dets)
-
         new_frame = VideoFrame.from_ndarray(processed, format="bgr24")
         new_frame.pts = frame.pts
         new_frame.time_base = frame.time_base
         return new_frame
 
 # ---------- App endpoints ----------
-# STEP 2: Pass the config variables when creating the service
-face_service = FaceSwapService(
-    insightface_home=INSIGHTFACE_HOME,
-    inswapper_path=INSWAPPER_PATH
-)
-
+face_service = FaceSwapService()
 
 @app.post("/prepare")
 async def prepare(req: Request):
@@ -168,7 +189,7 @@ async def prepare(req: Request):
     try:
         face_bytes = base64.b64decode(face_b64)
     except Exception:
-        raise HTTPException(status_code=400, detail="invalid base64 for face")
+        raise HTTPException(status_code=400, detail="invalid base64 face")
     if not face_service.set_source_face(face_bytes):
         raise HTTPException(status_code=400, detail="failed to set source face")
     return {"status": "success"}
@@ -176,25 +197,30 @@ async def prepare(req: Request):
 @app.post("/offer")
 async def offer(request: Request):
     params = await request.json()
+    if "sdp" not in params or "type" not in params:
+        raise HTTPException(status_code=400, detail="sdp and type required")
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
     pc = RTCPeerConnection(configuration=RTC_CONFIG)
     pcs.add(pc)
-    logger.info(f"Created PeerConnection {id(pc)}")
+    logger.info("Created PeerConnection %s", id(pc))
 
     @pc.on("track")
     def on_track(track):
-        logger.info(f"Track {track.kind} received")
+        logger.info("Track received: %s", track.kind)
         if track.kind == "video":
             processed_track = ProcessedVideoStreamTrack(track, face_service)
             pc.addTrack(processed_track)
 
             async def force_keyframe():
                 await asyncio.sleep(0.5)
-                video_sender = next((s for s in pc.getSenders() if s.track and s.track.kind == "video"), None)
+                video_sender = next(
+                    (s for s in pc.getSenders() if s.track and s.track.kind == "video"),
+                    None
+                )
                 if video_sender:
-                    logger.info("Sending PLI to request a keyframe")
                     try:
                         await video_sender.send_rtcp_pli()
+                        logger.info("PLI sent to request a keyframe from the client")
                     except Exception as e:
                         logger.error(f"Failed to send PLI request: {e}")
             
@@ -202,25 +228,35 @@ async def offer(request: Request):
 
     @pc.on("connectionstatechange")
     async def on_connectionstatechange():
-        logger.info(f"Connection state is {pc.connectionState}")
+        logger.info("Connection state %s -> %s", id(pc), pc.connectionState)
         if pc.connectionState in ("failed", "closed", "disconnected"):
-            await pc.close()
+            try:
+                await pc.close()
+            except Exception: pass
             pcs.discard(pc)
 
     await pc.setRemoteDescription(offer)
     answer = await pc.createAnswer()
     await pc.setLocalDescription(answer)
-    
+
+    async def wait_for_ice():
+        for _ in range(50):
+            if pc.iceGatheringState == "complete":
+                return
+            await asyncio.sleep(0.1)
+    await wait_for_ice()
+
+    logger.info("Returning answer for PC %s", id(pc))
     return {"sdp": pc.localDescription.sdp, "type": pc.localDescription.type}
 
 @app.on_event("shutdown")
 async def on_shutdown():
     logger.info("Shutting down, closing peer connections")
     coros = [pc.close() for pc in pcs]
-    await asyncio.gather(*coros)
+    if coros:
+        await asyncio.gather(*coros)
     pcs.clear()
 
 if __name__ == "__main__":
     import uvicorn
-    # Make sure this matches your filename. If the file is 'backend.py', use "backend:app".
-    uvicorn.run("backend:app", host="0.0.0.0", port=8001, log_level="info")
+    uvicorn.run("servver:app", host=HOST, port=PORT, log_level="info")
